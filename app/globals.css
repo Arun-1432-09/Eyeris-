@@ -91,3 +91,13 @@ h1, h2, h3, .font-serif {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Infinite Luxury Brand Marquee */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}

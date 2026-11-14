@@ -2,33 +2,43 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { Eye, Layers, ShieldCheck, Sparkles, RotateCw, ZoomIn } from 'lucide-react';
+import { Layers, ShieldCheck, Sparkles, RotateCw, Eye, Check, ChevronRight } from 'lucide-react';
+import { ScrollReveal } from '@/components/animations/ScrollReveal';
 
 interface EyewearCanvasProps {
   onOpenBooking: () => void;
 }
 
+type ViewPreset = 'assembled' | 'exploded' | 'lens' | 'temples';
+
 export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const [explosionProgress, setExplosionProgress] = useState<number>(0);
-  const [activeAnnotation, setActiveAnnotation] = useState<string>('all');
+  const [explosionProgress, setExplosionProgress] = useState<number>(0.2);
+  const [activePreset, setActivePreset] = useState<ViewPreset>('assembled');
   const [isAutoRotating, setIsAutoRotating] = useState<boolean>(true);
-  const [isInteracting, setIsInteracting] = useState<boolean>(false);
 
-  // References for Three.js objects
+  // References for Three.js state
   const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const partsRef = useRef<{
     leftLens?: THREE.Mesh;
     rightLens?: THREE.Mesh;
+    leftCoating?: THREE.Mesh;
+    rightCoating?: THREE.Mesh;
     leftRim?: THREE.Mesh;
     rightRim?: THREE.Mesh;
     bridge?: THREE.Mesh;
+    leftNosePad?: THREE.Mesh;
+    rightNosePad?: THREE.Mesh;
     leftTemple?: THREE.Group;
     rightTemple?: THREE.Group;
     rootGroup?: THREE.Group;
-    lensRays?: THREE.Group;
+    lightBeams?: THREE.Group;
   }>({});
+
+  const targetCameraPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0.3, 5.8));
+  const targetRotation = useRef<{ x: number; y: number }>({ x: 0.08, y: -0.2 });
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -41,83 +51,112 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     sceneRef.current = scene;
 
     // 2. Camera
-    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
-    camera.position.set(0, 0.4, 6.2);
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+    camera.position.copy(targetCameraPos.current);
+    cameraRef.current = camera;
 
-    // 3. Renderer with antialiasing and alpha
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    // 3. Renderer with high-end tone mapping & antialias
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance',
+    });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
+    renderer.toneMappingExposure = 1.35;
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // 4. Studio Lighting setup
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    // 4. Studio Lighting Rig
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
     scene.add(ambientLight);
 
-    const mainKeyLight = new THREE.DirectionalLight(0x00c49f, 2.5); // Signature Eyeris teal rim
-    mainKeyLight.position.set(4, 5, 5);
-    scene.add(mainKeyLight);
+    // Key Light (Eyeris Teal Rim)
+    const keyLight = new THREE.DirectionalLight(0x00c49f, 3.2);
+    keyLight.position.set(5, 6, 6);
+    scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x38bdf8, 1.8); // Cool optic blue fill
-    fillLight.position.set(-5, 3, 3);
-    scene.add(fillLight);
+    // Warm Accent Light (Champagne Gold highlight)
+    const goldLight = new THREE.DirectionalLight(0xd4af37, 2.4);
+    goldLight.position.set(-6, 4, 4);
+    scene.add(goldLight);
 
-    const topSoftLight = new THREE.DirectionalLight(0xffffff, 2.0);
-    topSoftLight.position.set(0, 8, 2);
-    scene.add(topSoftLight);
+    // Top Specular Light
+    const topLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    topLight.position.set(0, 9, 3);
+    scene.add(topLight);
 
-    const backRimLight = new THREE.DirectionalLight(0xa855f7, 2.2); // Luxury purple backlight
-    backRimLight.position.set(0, -3, -5);
-    scene.add(backRimLight);
+    // Back Rim (Optic Blue silhouette)
+    const backLight = new THREE.DirectionalLight(0x38bdf8, 2.5);
+    backLight.position.set(0, -4, -6);
+    scene.add(backLight);
 
-    // 5. Build High-Fidelity Parametric Eyewear Model
+    // 5. Materials
+    // Matte Midnight Titanium Frame
+    const titaniumMaterial = new THREE.MeshStandardMaterial({
+      color: 0x14171d,
+      metalness: 0.94,
+      roughness: 0.22,
+    });
+
+    // 24K Champagne Gold Accents & Hinges
+    const goldAccentMaterial = new THREE.MeshStandardMaterial({
+      color: 0xd4af37,
+      metalness: 0.98,
+      roughness: 0.14,
+    });
+
+    // High-Index 1.67 Physical Lens (Glass transmission + chromatic reflection)
+    const lensGlassMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xf0fdff,
+      transmission: 0.96,
+      opacity: 0.92,
+      transparent: true,
+      roughness: 0.02,
+      ior: 1.67,
+      reflectivity: 0.88,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.04,
+      emissive: 0x00c49f,
+      emissiveIntensity: 0.08,
+    });
+
+    // Anti-Reflective Molecular Coating Shield (Semi-transparent iridescent sheen)
+    const coatingMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x00c49f,
+      transmission: 0.88,
+      opacity: 0.65,
+      transparent: true,
+      roughness: 0.06,
+      clearcoat: 1.0,
+      emissive: 0x38bdf8,
+      emissiveIntensity: 0.2,
+    });
+
+    // Medical Silicone Nose Pads
+    const siliconeMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      transmission: 0.85,
+      opacity: 0.8,
+      transparent: true,
+      roughness: 0.35,
+    });
+
+    // 6. Geometry Creation
     const rootGroup = new THREE.Group();
     scene.add(rootGroup);
     partsRef.current.rootGroup = rootGroup;
 
-    // Materials
-    // Frame: Midnight Matte Titanium
-    const frameMaterial = new THREE.MeshStandardMaterial({
-      color: 0x181a20,
-      metalness: 0.92,
-      roughness: 0.22,
-    });
+    const lensRadiusX = 1.08;
+    const lensRadiusY = 0.82;
+    const eyeCenterDist = 1.38;
 
-    // Gold / Rose Accent Hinges & Screws
-    const goldAccentMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      metalness: 0.95,
-      roughness: 0.15,
-    });
-
-    // Precision Optical Lens Material: Physical glass with AR Coating sheen
-    const lensMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xe0f7fa,
-      transmission: 0.94,
-      opacity: 0.92,
-      transparent: true,
-      roughness: 0.04,
-      ior: 1.67, // High-index optical lens IOR
-      reflectivity: 0.85,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.05,
-      emissive: 0x00c49f,
-      emissiveIntensity: 0.06,
-    });
-
-    const lensRadiusX = 1.05;
-    const lensRadiusY = 0.78;
-    const lensThickness = 0.08;
-
-    // Helper to create curved oval lens geometry
+    // Helper: Oval Lens
     function createLensMesh(xOffset: number): THREE.Mesh {
-      // Curved shape
       const shape = new THREE.Shape();
-      const segments = 48;
+      const segments = 56;
       for (let i = 0; i <= segments; i++) {
         const theta = (i / segments) * Math.PI * 2;
         const x = Math.cos(theta) * lensRadiusX;
@@ -125,28 +164,41 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
         if (i === 0) shape.moveTo(x, y);
         else shape.lineTo(x, y);
       }
-
-      const extrudeSettings = {
-        steps: 2,
-        depth: lensThickness,
+      const geo = new THREE.ExtrudeGeometry(shape, {
+        depth: 0.08,
         bevelEnabled: true,
         bevelThickness: 0.03,
         bevelSize: 0.02,
         bevelSegments: 4,
-      };
-
-      const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-      geometry.center();
-      const mesh = new THREE.Mesh(geometry, lensMaterial.clone());
+      });
+      geo.center();
+      const mesh = new THREE.Mesh(geo, lensGlassMaterial.clone());
       mesh.position.set(xOffset, 0, 0);
       return mesh;
     }
 
-    // Helper to create matching rim frame
+    // Helper: Anti-Reflective Coating Disc
+    function createCoatingMesh(xOffset: number): THREE.Mesh {
+      const shape = new THREE.Shape();
+      const segments = 48;
+      for (let i = 0; i <= segments; i++) {
+        const theta = (i / segments) * Math.PI * 2;
+        const x = Math.cos(theta) * (lensRadiusX - 0.04);
+        const y = Math.sin(theta) * (lensRadiusY - 0.04);
+        if (i === 0) shape.moveTo(x, y);
+        else shape.lineTo(x, y);
+      }
+      const geo = new THREE.ShapeGeometry(shape);
+      const mesh = new THREE.Mesh(geo, coatingMaterial);
+      mesh.position.set(xOffset, 0, 0.06);
+      return mesh;
+    }
+
+    // Helper: Rim Frame
     function createRimMesh(xOffset: number): THREE.Mesh {
       const outerShape = new THREE.Shape();
-      const rimWidth = 0.07;
-      const segments = 48;
+      const rimWidth = 0.08;
+      const segments = 56;
 
       for (let i = 0; i <= segments; i++) {
         const theta = (i / segments) * Math.PI * 2;
@@ -156,90 +208,114 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
         else outerShape.lineTo(x, y);
       }
 
-      const holePath = new THREE.Path();
+      const hole = new THREE.Path();
       for (let i = 0; i <= segments; i++) {
         const theta = (i / segments) * Math.PI * 2;
         const x = Math.cos(theta) * lensRadiusX;
         const y = Math.sin(theta) * lensRadiusY;
-        if (i === 0) holePath.moveTo(x, y);
-        else holePath.lineTo(x, y);
+        if (i === 0) hole.moveTo(x, y);
+        else hole.lineTo(x, y);
       }
-      outerShape.holes.push(holePath);
+      outerShape.holes.push(hole);
 
-      const geometry = new THREE.ExtrudeGeometry(outerShape, {
+      const geo = new THREE.ExtrudeGeometry(outerShape, {
         depth: 0.12,
         bevelEnabled: true,
         bevelThickness: 0.02,
         bevelSize: 0.02,
         bevelSegments: 3,
       });
-      geometry.center();
-      const mesh = new THREE.Mesh(geometry, frameMaterial);
+      geo.center();
+      const mesh = new THREE.Mesh(geo, titaniumMaterial);
       mesh.position.set(xOffset, 0, 0);
       return mesh;
     }
 
-    const eyeCenterDistance = 1.35;
-
-    // Create Left & Right Rims
-    const leftRim = createRimMesh(-eyeCenterDistance);
-    const rightRim = createRimMesh(eyeCenterDistance);
+    // Add Rims
+    const leftRim = createRimMesh(-eyeCenterDist);
+    const rightRim = createRimMesh(eyeCenterDist);
     rootGroup.add(leftRim);
     rootGroup.add(rightRim);
     partsRef.current.leftRim = leftRim;
     partsRef.current.rightRim = rightRim;
 
-    // Create Left & Right Lenses
-    const leftLens = createLensMesh(-eyeCenterDistance);
-    const rightLens = createLensMesh(eyeCenterDistance);
+    // Add Lenses
+    const leftLens = createLensMesh(-eyeCenterDist);
+    const rightLens = createLensMesh(eyeCenterDist);
     rootGroup.add(leftLens);
     rootGroup.add(rightLens);
     partsRef.current.leftLens = leftLens;
     partsRef.current.rightLens = rightLens;
 
-    // Nose Bridge (Central Arch)
+    // Add Anti-Reflective Coating Layers
+    const leftCoating = createCoatingMesh(-eyeCenterDist);
+    const rightCoating = createCoatingMesh(eyeCenterDist);
+    rootGroup.add(leftCoating);
+    rootGroup.add(rightCoating);
+    partsRef.current.leftCoating = leftCoating;
+    partsRef.current.rightCoating = rightCoating;
+
+    // Bridge Arch
     const bridgeCurve = new THREE.CubicBezierCurve3(
-      new THREE.Vector3(-eyeCenterDistance + lensRadiusX - 0.02, 0.1, 0),
-      new THREE.Vector3(-0.3, 0.45, 0.08),
-      new THREE.Vector3(0.3, 0.45, 0.08),
-      new THREE.Vector3(eyeCenterDistance - lensRadiusX + 0.02, 0.1, 0)
+      new THREE.Vector3(-eyeCenterDist + lensRadiusX - 0.02, 0.12, 0),
+      new THREE.Vector3(-0.3, 0.46, 0.08),
+      new THREE.Vector3(0.3, 0.46, 0.08),
+      new THREE.Vector3(eyeCenterDist - lensRadiusX + 0.02, 0.12, 0)
     );
-    const bridgeGeo = new THREE.TubeGeometry(bridgeCurve, 24, 0.05, 12, false);
-    const bridgeMesh = new THREE.Mesh(bridgeGeo, frameMaterial);
+    const bridgeGeo = new THREE.TubeGeometry(bridgeCurve, 28, 0.055, 12, false);
+    const bridgeMesh = new THREE.Mesh(bridgeGeo, titaniumMaterial);
     rootGroup.add(bridgeMesh);
     partsRef.current.bridge = bridgeMesh;
 
-    // Helper to create Temples (Arms) with hinges
+    // Silicone Nose Pads
+    const padGeo = new THREE.CapsuleGeometry(0.06, 0.14, 8, 16);
+    const leftPad = new THREE.Mesh(padGeo, siliconeMaterial);
+    leftPad.position.set(-0.38, -0.15, -0.12);
+    leftPad.rotation.z = -0.3;
+    const rightPad = new THREE.Mesh(padGeo, siliconeMaterial);
+    rightPad.position.set(0.38, -0.15, -0.12);
+    rightPad.rotation.z = 0.3;
+    rootGroup.add(leftPad);
+    rootGroup.add(rightPad);
+    partsRef.current.leftNosePad = leftPad;
+    partsRef.current.rightNosePad = rightPad;
+
+    // Temples (Sub-10g Ergonomic Beta-Titanium Arms)
     function createTempleGroup(isLeft: boolean): THREE.Group {
       const group = new THREE.Group();
-      const sideMultiplier = isLeft ? -1 : 1;
+      const mult = isLeft ? -1 : 1;
 
-      // Hinge Block
-      const hingeGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.12, 16);
-      const hinge = new THREE.Mesh(hingeGeo, goldAccentMaterial);
+      // Hinge Cylinder with Gold Inlay
+      const hinge = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.045, 0.045, 0.14, 16),
+        goldAccentMaterial
+      );
       hinge.rotation.z = Math.PI / 2;
       group.add(hinge);
 
-      // Temple Arm Curve
-      const templeCurve = new THREE.CatmullRomCurve3([
+      // Ergonomic Curved Arm
+      const curve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(sideMultiplier * 0.04, -0.02, -1.2),
-        new THREE.Vector3(sideMultiplier * 0.06, -0.05, -2.4),
-        new THREE.Vector3(sideMultiplier * 0.08, -0.35, -2.85), // Ear contour drop
+        new THREE.Vector3(mult * 0.05, -0.02, -1.2),
+        new THREE.Vector3(mult * 0.08, -0.04, -2.4),
+        new THREE.Vector3(mult * 0.09, -0.36, -2.9),
       ]);
-      const armGeo = new THREE.TubeGeometry(templeCurve, 32, 0.035, 12, false);
-      const armMesh = new THREE.Mesh(armGeo, frameMaterial);
+      const armMesh = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, 32, 0.038, 12, false),
+        titaniumMaterial
+      );
       group.add(armMesh);
 
-      // Gold Accent Temple Tip
-      const tipGeo = new THREE.SphereGeometry(0.05, 16, 16);
-      const tip = new THREE.Mesh(tipGeo, goldAccentMaterial);
-      tip.position.set(sideMultiplier * 0.08, -0.35, -2.85);
+      // Gold Tip Inset
+      const tip = new THREE.Mesh(
+        new THREE.SphereGeometry(0.055, 16, 16),
+        goldAccentMaterial
+      );
+      tip.position.set(mult * 0.09, -0.36, -2.9);
       group.add(tip);
 
-      // Position temple at outer edge of rim
-      const xAnchor = sideMultiplier * (eyeCenterDistance + lensRadiusX + 0.02);
-      group.position.set(xAnchor, 0.15, 0.02);
+      const xPos = mult * (eyeCenterDist + lensRadiusX + 0.02);
+      group.position.set(xPos, 0.16, 0.02);
       return group;
     }
 
@@ -250,51 +326,48 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     partsRef.current.leftTemple = leftTemple;
     partsRef.current.rightTemple = rightTemple;
 
-    // Blue-Light Refractive Beams passing through lenses
-    const lensRaysGroup = new THREE.Group();
+    // Laser Light Beams (Anti-Reflective Dispersion rays)
+    const beams = new THREE.Group();
     for (let i = -1; i <= 1; i += 2) {
-      const rayGeo = new THREE.CylinderGeometry(0.015, 0.015, 2.4, 8);
-      const rayMat = new THREE.MeshBasicMaterial({
+      const beamGeo = new THREE.CylinderGeometry(0.015, 0.015, 3.2, 8);
+      const beamMat = new THREE.MeshBasicMaterial({
         color: 0x38bdf8,
         transparent: true,
-        opacity: 0.35,
+        opacity: 0.45,
       });
-      const ray = new THREE.Mesh(rayGeo, rayMat);
-      ray.rotation.x = Math.PI / 2;
-      ray.position.set(i * eyeCenterDistance, 0, 0.5);
-      lensRaysGroup.add(ray);
+      const beam = new THREE.Mesh(beamGeo, beamMat);
+      beam.rotation.x = Math.PI / 2;
+      beam.position.set(i * eyeCenterDist, 0, 0.8);
+      beams.add(beam);
     }
-    rootGroup.add(lensRaysGroup);
-    partsRef.current.lensRays = lensRaysGroup;
+    rootGroup.add(beams);
+    partsRef.current.lightBeams = beams;
 
-    // 6. Interaction: Mouse Drag and Tilt
+    // 7. Interactive Drag & Rotate
     let isDragging = false;
     let prevMouseX = 0;
     let prevMouseY = 0;
-    let targetRotationX = 0.08;
-    let targetRotationY = -0.3;
 
     const onMouseDown = (e: MouseEvent) => {
       isDragging = true;
-      setIsInteracting(true);
+      setIsAutoRotating(false);
       prevMouseX = e.clientX;
       prevMouseY = e.clientY;
     };
 
     const onMouseMove = (e: MouseEvent) => {
       if (!isDragging) {
-        // Subtle hover tilt
         const rect = container.getBoundingClientRect();
         const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
         const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-        targetRotationY = nx * 0.45;
-        targetRotationX = -ny * 0.3;
+        targetRotation.current.y = nx * 0.45;
+        targetRotation.current.x = -ny * 0.25;
         return;
       }
-      const deltaX = e.clientX - prevMouseX;
-      const deltaY = e.clientY - prevMouseY;
-      targetRotationY += deltaX * 0.008;
-      targetRotationX += deltaY * 0.008;
+      const dx = e.clientX - prevMouseX;
+      const dy = e.clientY - prevMouseY;
+      targetRotation.current.y += dx * 0.008;
+      targetRotation.current.x += dy * 0.008;
       prevMouseX = e.clientX;
       prevMouseY = e.clientY;
     };
@@ -303,49 +376,9 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
       isDragging = false;
     };
 
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        isDragging = true;
-        setIsInteracting(true);
-        prevMouseX = e.touches[0].clientX;
-        prevMouseY = e.touches[0].clientY;
-      }
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (!isDragging || e.touches.length !== 1) return;
-      const deltaX = e.touches[0].clientX - prevMouseX;
-      const deltaY = e.touches[0].clientY - prevMouseY;
-      targetRotationY += deltaX * 0.009;
-      targetRotationX += deltaY * 0.009;
-      prevMouseX = e.touches[0].clientX;
-      prevMouseY = e.touches[0].clientY;
-    };
-
     container.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
-    container.addEventListener('touchstart', onTouchStart, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: true });
-    window.addEventListener('touchend', onMouseUp);
-
-    // 7. Scroll Listener to sync explosion progress with scroll position
-    const handleWindowScroll = () => {
-      const section = document.getElementById('anatomy-3d');
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      
-      // Calculate how far section has scrolled through viewport
-      const totalDist = rect.height + windowHeight;
-      const currentProgress = (windowHeight - rect.top) / totalDist;
-      const clamped = Math.max(0, Math.min(1, currentProgress));
-      
-      // Update progress state
-      setExplosionProgress(clamped);
-    };
-
-    window.addEventListener('scroll', handleWindowScroll, { passive: true });
 
     // 8. Animation Loop
     let animationFrameId: number;
@@ -354,16 +387,21 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
-      const elapsedTime = clock.getElapsedTime();
+      const elapsed = clock.getElapsedTime();
+
+      // Smooth camera interpolation
+      if (cameraRef.current) {
+        cameraRef.current.position.lerp(targetCameraPos.current, 0.06);
+      }
 
       // Smooth rotation interpolation
       if (rootGroup) {
-        rootGroup.rotation.y += (targetRotationY - rootGroup.rotation.y) * 0.07;
-        rootGroup.rotation.x += (targetRotationX - rootGroup.rotation.x) * 0.07;
+        rootGroup.rotation.y += (targetRotation.current.y - rootGroup.rotation.y) * 0.08;
+        rootGroup.rotation.x += (targetRotation.current.x - rootGroup.rotation.x) * 0.08;
 
-        // Gentle floating breathing animation if idle
-        if (!isDragging && !isInteracting) {
-          rootGroup.position.y = Math.sin(elapsedTime * 1.5) * 0.08;
+        if (isAutoRotating && !isDragging) {
+          rootGroup.rotation.y += delta * 0.2;
+          rootGroup.position.y = Math.sin(elapsed * 1.5) * 0.08;
         }
       }
 
@@ -372,14 +410,13 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
 
     animate();
 
-    // Resize handler
     const handleResize = () => {
-      if (!container || !rendererRef.current) return;
-      const newWidth = container.clientWidth;
-      const newHeight = container.clientHeight;
-      camera.aspect = newWidth / newHeight;
-      camera.updateProjectionMatrix();
-      rendererRef.current.setSize(newWidth, newHeight);
+      if (!container || !rendererRef.current || !cameraRef.current) return;
+      const nw = container.clientWidth;
+      const nh = container.clientHeight;
+      cameraRef.current.aspect = nw / nh;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(nw, nh);
     };
 
     window.addEventListener('resize', handleResize);
@@ -387,13 +424,9 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleWindowScroll);
       container.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
-      container.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchend', onMouseUp);
       if (rendererRef.current) {
         rendererRef.current.dispose();
         rendererRef.current = null;
@@ -403,136 +436,161 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
         container.innerHTML = '';
       }
     };
-  }, []);
+  }, [isAutoRotating]);
 
-  // Sync Exploded Positions based on explosionProgress
+  // Synchronize Exploded Positions
   useEffect(() => {
     const parts = partsRef.current;
     if (!parts.leftLens || !parts.rightLens || !parts.leftTemple || !parts.rightTemple) return;
 
-    const p = explosionProgress; // 0 to 1
+    const p = explosionProgress;
 
-    // Lenses fly forward along Z and slightly outward
+    // Lenses fly forward along Z
     parts.leftLens.position.z = p * 1.8;
     parts.rightLens.position.z = p * 1.8;
-    parts.leftLens.position.x = -1.35 - p * 0.25;
-    parts.rightLens.position.x = 1.35 + p * 0.25;
+    parts.leftLens.position.x = -1.38 - p * 0.22;
+    parts.rightLens.position.x = 1.38 + p * 0.22;
 
-    // Temples slide outward along X and pivot
-    parts.leftTemple.position.x = -2.45 - p * 1.1;
-    parts.rightTemple.position.x = 2.45 + p * 1.1;
+    // Anti-Reflective Coating floats further in front of lenses
+    if (parts.leftCoating && parts.rightCoating) {
+      parts.leftCoating.position.z = p * 2.3 + 0.06;
+      parts.rightCoating.position.z = p * 2.3 + 0.06;
+      parts.leftCoating.position.x = -1.38 - p * 0.26;
+      parts.rightCoating.position.x = 1.38 + p * 0.26;
+    }
+
+    // Temples slide outward & flex
+    parts.leftTemple.position.x = -2.52 - p * 1.2;
+    parts.rightTemple.position.x = 2.52 + p * 1.2;
     parts.leftTemple.rotation.y = -p * 0.35;
     parts.rightTemple.rotation.y = p * 0.35;
 
     // Rims drift slightly forward
     if (parts.leftRim && parts.rightRim) {
-      parts.leftRim.position.z = p * 0.4;
-      parts.rightRim.position.z = p * 0.4;
+      parts.leftRim.position.z = p * 0.45;
+      parts.rightRim.position.z = p * 0.45;
     }
 
     // Light rays expand
-    if (parts.lensRays) {
-      parts.lensRays.scale.set(1 + p * 0.5, 1 + p * 0.8, 1);
-      (parts.lensRays.children[0] as THREE.Mesh).position.z = 0.5 + p * 0.8;
-      (parts.lensRays.children[1] as THREE.Mesh).position.z = 0.5 + p * 0.8;
+    if (parts.lightBeams && parts.lightBeams.children.length >= 2) {
+      parts.lightBeams.scale.set(1 + p * 0.5, 1 + p * 0.8, 1);
     }
   }, [explosionProgress]);
 
+  // Handle Preset Views
+  const selectPreset = (preset: ViewPreset) => {
+    setActivePreset(preset);
+    setIsAutoRotating(false);
+
+    if (preset === 'assembled') {
+      setExplosionProgress(0);
+      targetCameraPos.current.set(0, 0.3, 5.8);
+      targetRotation.current = { x: 0.08, y: -0.2 };
+    } else if (preset === 'exploded') {
+      setExplosionProgress(1.0);
+      targetCameraPos.current.set(0, 0.4, 6.4);
+      targetRotation.current = { x: 0.12, y: -0.35 };
+    } else if (preset === 'lens') {
+      setExplosionProgress(0.75);
+      targetCameraPos.current.set(-1.2, 0.1, 4.0);
+      targetRotation.current = { x: 0.05, y: -0.15 };
+    } else if (preset === 'temples') {
+      setExplosionProgress(0.35);
+      targetCameraPos.current.set(2.4, 0.2, 4.5);
+      targetRotation.current = { x: 0.1, y: 1.1 };
+    }
+  };
+
   return (
-    <section id="anatomy-3d" className="relative min-h-[110vh] bg-background text-white overflow-hidden py-16 sm:py-24 border-b border-white/5">
+    <section id="anatomy-3d" className="relative py-20 bg-background text-white overflow-hidden border-t border-white/5">
       {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-brand-500/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/3 left-1/4 w-[450px] h-[450px] bg-optic-blue/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-brand-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-mono uppercase tracking-wider mb-4">
+        
+        {/* Header: Short, Clear, Minimal */}
+        <ScrollReveal variant="fadeUp" className="text-center max-w-2xl mx-auto mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-mono uppercase tracking-wider mb-3">
             <Layers className="w-3.5 h-3.5 text-brand-400" />
-            <span>Interactive 3D Engineering</span>
+            <span>Interactive 3D Anatomy</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-display mb-4">
-            The <span className="bg-gradient-to-r from-white via-brand-200 to-brand-400 bg-clip-text text-transparent">Anatomy of Vision</span>
+          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-white tracking-tight">
+            The Science Behind{' '}
+            <span className="bg-gradient-to-r from-brand-300 to-optic-blue bg-clip-text text-transparent">
+              Precision Eyewear.
+            </span>
           </h2>
-          <p className="text-neutral-300 text-sm sm:text-base leading-relaxed">
-            At Eyeris, frames and lenses are engineered as one cohesive medical and stylistic instrument. 
-            Scroll or drag to explode the frame into its clinical optical elements.
+          <p className="text-neutral-400 text-sm sm:text-base mt-2">
+            60–70% of optical performance lives in the lens. Drag to rotate and explore the layers.
           </p>
-        </div>
+        </ScrollReveal>
 
-        {/* 3D Canvas Viewport */}
-        <div className="relative w-full h-[540px] sm:h-[620px] rounded-3xl bg-surface/80 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing">
+        {/* 3D Viewport Card */}
+        <ScrollReveal variant="scaleIn" className="relative w-full h-[520px] sm:h-[600px] rounded-3xl bg-surface/80 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing">
           {/* Canvas Mount */}
           <div ref={mountRef} className="w-full h-full" />
 
-          {/* Interactive HUD Overlay */}
-          <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex flex-col gap-2 pointer-events-none">
-            <span className="text-[11px] font-mono tracking-wider text-brand-300 uppercase bg-surface-raised/90 border border-brand-500/30 px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-2">
-              <RotateCw className="w-3.5 h-3.5 text-brand-400 animate-spin-slow" />
-              <span>Interactive 3D • Drag to Tilt / Rotate</span>
-            </span>
+          {/* Preset Buttons HUD */}
+          <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex flex-wrap gap-2 z-20">
+            <button
+              onClick={() => selectPreset('assembled')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                activePreset === 'assembled'
+                  ? 'bg-brand-400 text-slate-950 font-bold shadow-lg shadow-brand-400/20'
+                  : 'bg-surface-raised/80 text-neutral-300 hover:text-white border border-white/10'
+              }`}
+            >
+              Assembled Frame
+            </button>
+            <button
+              onClick={() => selectPreset('exploded')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                activePreset === 'exploded'
+                  ? 'bg-brand-400 text-slate-950 font-bold shadow-lg shadow-brand-400/20'
+                  : 'bg-surface-raised/80 text-neutral-300 hover:text-white border border-white/10'
+              }`}
+            >
+              Exploded Anatomy
+            </button>
+            <button
+              onClick={() => selectPreset('lens')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                activePreset === 'lens'
+                  ? 'bg-brand-400 text-slate-950 font-bold shadow-lg shadow-brand-400/20'
+                  : 'bg-surface-raised/80 text-neutral-300 hover:text-white border border-white/10'
+              }`}
+            >
+              Lens Coating Shield
+            </button>
+            <button
+              onClick={() => selectPreset('temples')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                activePreset === 'temples'
+                  ? 'bg-brand-400 text-slate-950 font-bold shadow-lg shadow-brand-400/20'
+                  : 'bg-surface-raised/80 text-neutral-300 hover:text-white border border-white/10'
+              }`}
+            >
+              Titanium Flex Arms
+            </button>
           </div>
 
-          {/* Micro Exploded Legend Badges */}
-          <div className="absolute top-4 right-4 sm:top-6 sm:right-6 flex flex-col gap-2.5 max-w-[280px]">
-            <div 
-              className={`p-3 rounded-xl border backdrop-blur-md transition-all cursor-pointer ${
-                activeAnnotation === 'lens' || explosionProgress > 0.4
-                  ? 'bg-brand-950/80 border-brand-400/60 shadow-[0_0_20px_rgba(0,196,159,0.25)]'
-                  : 'bg-surface/60 border-white/10 opacity-75 hover:opacity-100'
-              }`}
-              onClick={() => setActiveAnnotation('lens')}
+          {/* Quick Rotation / Auto-play Toggle */}
+          <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20">
+            <button
+              onClick={() => setIsAutoRotating(!isAutoRotating)}
+              className="px-3 py-1.5 rounded-xl bg-surface-raised/80 border border-white/10 text-neutral-300 hover:text-white text-xs font-mono flex items-center gap-1.5 backdrop-blur-md"
             >
-              <div className="flex items-center gap-2 mb-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-brand-400 animate-pulse"></span>
-                <span className="text-xs font-bold text-white font-display">Aspheric 1.67 Lenses</span>
-              </div>
-              <p className="text-[11px] text-neutral-300 leading-snug">
-                German multi-coat anti-glare with high-frequency blue-violet absorption. 60–70% of optical clarity.
-              </p>
-            </div>
-
-            <div 
-              className={`p-3 rounded-xl border backdrop-blur-md transition-all cursor-pointer ${
-                activeAnnotation === 'frame' || (explosionProgress > 0.2 && explosionProgress <= 0.6)
-                  ? 'bg-surface-raised border-gold-400/60 shadow-[0_0_20px_rgba(245,158,11,0.2)]'
-                  : 'bg-surface/60 border-white/10 opacity-75 hover:opacity-100'
-              }`}
-              onClick={() => setActiveAnnotation('frame')}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-gold-400"></span>
-                <span className="text-xs font-bold text-white font-display">Beta-Titanium Temples</span>
-              </div>
-              <p className="text-[11px] text-neutral-300 leading-snug">
-                Surgical-grade memory titanium. Ultra-light &lt;9.8 grams with zero pressure on temporal arteries.
-              </p>
-            </div>
-
-            <div 
-              className={`p-3 rounded-xl border backdrop-blur-md transition-all cursor-pointer ${
-                activeAnnotation === 'hospital' || explosionProgress > 0.7
-                  ? 'bg-optic-blue/20 border-optic-blue/60 shadow-[0_0_20px_rgba(56,189,248,0.2)]'
-                  : 'bg-surface/60 border-white/10 opacity-75 hover:opacity-100'
-              }`}
-              onClick={() => setActiveAnnotation('hospital')}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-optic-blue" />
-                <span className="text-xs font-bold text-white font-display">Global Eye Hospital Rx</span>
-              </div>
-              <p className="text-[11px] text-neutral-300 leading-snug">
-                Focal power aligned directly from doctor examination through ground-floor interconnected clinic.
-              </p>
-            </div>
+              <RotateCw className={`w-3.5 h-3.5 ${isAutoRotating ? 'text-brand-400 animate-spin-slow' : 'text-neutral-500'}`} />
+              <span>{isAutoRotating ? 'Auto-Rotate ON' : 'Paused'}</span>
+            </button>
           </div>
 
-          {/* Bottom Interactive Explosion Slider Bar */}
-          <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-12 sm:right-12 bg-surface-raised/95 border border-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl">
+          {/* Bottom Slider & Action Bar */}
+          <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-8 sm:right-8 bg-surface-raised/90 border border-white/10 backdrop-blur-xl rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl z-20">
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <span className="text-xs font-mono uppercase text-brand-300 tracking-wider flex items-center gap-1.5 whitespace-nowrap">
                 <Layers className="w-4 h-4 text-brand-400" />
-                <span>Explode View: {Math.round(explosionProgress * 100)}%</span>
+                <span>Explode: {Math.round(explosionProgress * 100)}%</span>
               </span>
               <input
                 type="range"
@@ -540,59 +598,65 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
                 max="1"
                 step="0.01"
                 value={explosionProgress}
-                onChange={(e) => setExplosionProgress(parseFloat(e.target.value))}
-                className="w-full sm:w-64 h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-brand-400"
+                onChange={(e) => {
+                  setExplosionProgress(parseFloat(e.target.value));
+                  setIsAutoRotating(false);
+                }}
+                className="w-full sm:w-56 h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-brand-400"
               />
             </div>
 
             <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-              <button
-                onClick={() => setExplosionProgress(explosionProgress > 0.5 ? 0 : 1)}
-                className="text-xs font-medium text-neutral-300 hover:text-white px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 transition bg-surface"
-              >
-                {explosionProgress > 0.5 ? 'Reassemble Frame' : 'Full Exploded View'}
-              </button>
+              <span className="text-[11px] text-neutral-400 hidden md:inline">
+                Drag to rotate 360° • Pinch to inspect
+              </span>
               <button
                 onClick={onOpenBooking}
-                className="text-xs font-semibold text-slate-950 bg-brand-400 hover:bg-brand-300 px-4 py-2 rounded-xl transition shadow-[0_0_20px_rgba(0,196,159,0.3)] whitespace-nowrap"
+                className="text-xs font-bold text-slate-950 bg-gradient-to-r from-brand-300 to-brand-400 hover:from-brand-200 hover:to-brand-300 px-4 py-2 rounded-xl transition shadow-[0_0_20px_rgba(0,196,159,0.3)] whitespace-nowrap"
               >
                 Book Lens Fitting
               </button>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
 
-        {/* 3 Bottom Callout Pillars */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          <div className="p-6 rounded-2xl bg-surface/50 border border-white/5 hover:border-brand-500/30 transition-all">
-            <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 mb-4">
-              <Eye className="w-5 h-5" />
+        {/* 3 Key Takeaway Stats — Short, Simple & Clear */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+          <ScrollReveal variant="fadeUp" delay={0.1} className="p-5 rounded-2xl bg-surface/60 border border-white/5 hover:border-brand-500/30 transition-all">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center text-brand-400">
+                <Eye className="w-4 h-4" />
+              </div>
+              <h3 className="text-sm font-bold text-white font-serif">60–70% Lens Specialisation</h3>
             </div>
-            <h3 className="text-lg font-bold text-white mb-2 font-display">60–70% Lens Specialisation</h3>
-            <p className="text-sm text-neutral-400 leading-relaxed">
-              We calibrate lenses based on your exact working posture, screen distance, and prescription power rather than selling mass off-the-shelf plastic.
+            <p className="text-xs text-neutral-400 leading-relaxed">
+              We calibrate lenses to your exact working posture, screen distance, and prescription power.
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="p-6 rounded-2xl bg-surface/50 border border-white/5 hover:border-gold-400/30 transition-all">
-            <div className="w-10 h-10 rounded-xl bg-gold-400/10 border border-gold-400/20 flex items-center justify-center text-gold-400 mb-4">
-              <Sparkles className="w-5 h-5" />
+          <ScrollReveal variant="fadeUp" delay={0.2} className="p-5 rounded-2xl bg-surface/60 border border-white/5 hover:border-gold-400/30 transition-all">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-gold-400/10 flex items-center justify-center text-gold-400">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <h3 className="text-sm font-bold text-white font-serif">Curated International Brands</h3>
             </div>
-            <h3 className="text-lg font-bold text-white mb-2 font-display">Curated International Frames</h3>
-            <p className="text-sm text-neutral-400 leading-relaxed">
-              Ray-Ban, Oakley, Prada, Stepper Titanium, and Tommy Hilfiger under one roof at practical Hyderabad price points (₹5,000 to ₹15,000+).
+            <p className="text-xs text-neutral-400 leading-relaxed">
+              Authentic Ray-Ban, Oakley, Prada &amp; Stepper Titanium at practical Hyderabad price points.
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="p-6 rounded-2xl bg-surface/50 border border-white/5 hover:border-optic-blue/30 transition-all">
-            <div className="w-10 h-10 rounded-xl bg-optic-blue/10 border border-optic-blue/20 flex items-center justify-center text-optic-blue mb-4">
-              <ShieldCheck className="w-5 h-5" />
+          <ScrollReveal variant="fadeUp" delay={0.3} className="p-5 rounded-2xl bg-surface/60 border border-white/5 hover:border-optic-blue/30 transition-all">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-optic-blue/10 flex items-center justify-center text-optic-blue">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+              <h3 className="text-sm font-bold text-white font-serif">Hospital-Connected Care</h3>
             </div>
-            <h3 className="text-lg font-bold text-white mb-2 font-display">Hospital-Connected Precision</h3>
-            <p className="text-sm text-neutral-400 leading-relaxed">
-              Direct ground-floor link to Global Eye Hospital. Transition seamlessly from doctor consultation to custom eyewear dispensing in minutes.
+            <p className="text-xs text-neutral-400 leading-relaxed">
+              Direct ground-floor link to Global Eye Hospital. Transition seamlessly from doctor Rx to custom eyewear.
             </p>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>
