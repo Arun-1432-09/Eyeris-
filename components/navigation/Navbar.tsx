@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Eye, Calendar, Phone, Sparkles, MapPin, Menu, X, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
+import { Eye, Calendar, Phone, Sparkles, MapPin, Menu, X, ShieldCheck, Lock } from 'lucide-react';
 import { EYERIS_STORE_PHONE, EYERIS_LOCATION_URL } from '@/components/booking/WhatsAppSync';
 
 interface NavbarProps {
   onOpenBooking: () => void;
+  onOpenLensFinder?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenBooking }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenBooking, onOpenLensFinder }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -22,25 +24,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenBooking }) => {
 
   return (
     <>
-      {/* Top micro-announcement banner */}
-      <div className="bg-gradient-to-r from-emerald-950 via-surface to-slate-900 border-b border-white/5 py-1.5 px-4 text-xs text-neutral-300 font-medium">
+      {/* Top Editorial Banner */}
+      <div className="bg-graphite border-b border-white/5 py-1.5 px-4 text-xs text-neutral-300 font-mono">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-brand-400 animate-pulse"></span>
-            <span>Ground-floor interconnected with <strong className="text-white">Global Eye Hospital</strong> • 40 Years of Optical Trust</span>
-          </div>
-          <div className="hidden sm:flex items-center gap-4 text-neutral-400 text-[11px]">
-            <span className="flex items-center gap-1 text-brand-300">
-              <ShieldCheck className="w-3.5 h-3.5" /> ₹20,000 Corporate Vision Claim Support
+            <span>
+              KPHB Road No. 1, Kukatpally • Ground-floor linked to <strong className="text-white">Global Eye Hospital</strong>
             </span>
-            <a 
-              href={EYERIS_LOCATION_URL} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="flex items-center gap-1 hover:text-white transition"
+          </div>
+
+          <div className="hidden sm:flex items-center gap-4 text-neutral-400 text-[11px]">
+            <span className="flex items-center gap-1 text-champagne-300">
+              <ShieldCheck className="w-3.5 h-3.5" /> 40 Years of Optical Trust
+            </span>
+            <Link
+              href="/admin"
+              className="flex items-center gap-1 text-neutral-400 hover:text-brand-300 transition"
             >
-              <MapPin className="w-3 h-3 text-brand-400" /> KPHB Rd #1, Kukatpally
-            </a>
+              <Lock className="w-3 h-3 text-brand-400" /> Staff Portal
+            </Link>
           </div>
         </div>
       </div>
@@ -49,50 +52,62 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenBooking }) => {
       <header
         className={`sticky top-0 z-40 transition-all duration-300 ${
           scrolled
-            ? 'bg-background/85 backdrop-blur-md border-b border-white/10 shadow-2xl py-3'
-            : 'bg-background/40 backdrop-blur-sm border-b border-white/5 py-4'
+            ? 'bg-background/90 backdrop-blur-md border-b border-white/10 shadow-2xl py-3'
+            : 'bg-background/50 backdrop-blur-sm border-b border-white/5 py-4'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+          
           {/* Brand Logo */}
           <a href="#" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400/20 via-brand-500/10 to-transparent border border-brand-500/30 flex items-center justify-center text-brand-400 group-hover:border-brand-400 transition-all shadow-[0_0_20px_rgba(0,196,159,0.2)]">
-              <Eye className="w-5 h-5 text-brand-400" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-champagne-500/20 via-brand-500/10 to-transparent border border-champagne-500/30 flex items-center justify-center text-champagne-400 group-hover:border-brand-400 transition-all shadow-[0_0_20px_rgba(185,154,104,0.2)]">
+              <Eye className="w-5 h-5 text-champagne-400" />
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xl font-bold tracking-wider text-white font-display">EYERIS</span>
-                <span className="text-[10px] tracking-widest uppercase bg-brand-500/20 text-brand-300 px-1.5 py-0.5 rounded font-mono border border-brand-500/30">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-bold tracking-wider text-white font-serif">EYERIS</span>
+                <span className="text-[10px] tracking-widest uppercase bg-brand-500/15 text-brand-300 px-1.5 py-0.5 rounded font-mono border border-brand-400/30">
                   OPTICALS
                 </span>
               </div>
-              <p className="text-[10px] tracking-widest text-neutral-400 uppercase font-medium">
-                KPHB Road No. 1 • Hyderabad
+              <p className="text-[9px] tracking-widest text-neutral-400 uppercase font-mono">
+                Precision Vision • Hyderabad
               </p>
             </div>
           </a>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-neutral-300">
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-mono text-neutral-300">
+            <a href="#story" className="hover:text-champagne-300 transition">Heritage</a>
+            <a href="#collections" className="hover:text-champagne-300 transition">Collections</a>
+            <a href="#brands" className="hover:text-champagne-300 transition">Brands</a>
             <a href="#anatomy-3d" className="hover:text-brand-300 transition flex items-center gap-1">
               <span>3D Anatomy</span>
-              <span className="text-[9px] text-brand-400 bg-brand-950/60 border border-brand-500/30 px-1 rounded">Interactive</span>
+              <span className="text-[9px] text-brand-400 bg-brand-950/80 border border-brand-400/30 px-1 rounded">Interactive</span>
             </a>
-            <a href="#brands" className="hover:text-brand-300 transition">Brands</a>
-            <a href="#calculator" className="hover:text-brand-300 transition flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-gold-400" />
-              <span>Corporate Calculator</span>
+            <a href="#lens-lab" className="hover:text-brand-300 transition">Lens Lab</a>
+            {onOpenLensFinder && (
+              <button
+                onClick={onOpenLensFinder}
+                className="hover:text-brand-300 text-brand-400 transition flex items-center gap-1"
+              >
+                <Sparkles className="w-3 h-3 text-brand-400" />
+                <span>Lens Finder</span>
+              </button>
+            )}
+            <a href="#calculator" className="hover:text-champagne-300 transition flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 text-champagne-400" />
+              <span>₹20k Allowance</span>
             </a>
-            <a href="#lens-lab" className="hover:text-brand-300 transition">Lens Lab & Reels</a>
-            <a href="#hospital-care" className="hover:text-brand-300 transition">Hospital Care</a>
-            <a href="#contact" className="hover:text-brand-300 transition">Store Visit</a>
+            <a href="#reels" className="hover:text-champagne-300 transition">Journal</a>
+            <a href="#contact" className="hover:text-champagne-300 transition">Visit Store</a>
           </nav>
 
           {/* Action CTAs */}
           <div className="flex items-center gap-3">
             <a
               href={`tel:${EYERIS_STORE_PHONE}`}
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs text-neutral-300 hover:text-white px-3 py-2 rounded-lg border border-white/10 hover:border-white/20 transition bg-surface/50"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-neutral-300 hover:text-white px-3 py-2 rounded-lg border border-white/10 hover:border-white/20 transition bg-surface/50"
             >
               <Phone className="w-3.5 h-3.5 text-brand-400" />
               <span>Call Store</span>
@@ -100,79 +115,50 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenBooking }) => {
 
             <button
               onClick={onOpenBooking}
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-950 bg-gradient-to-r from-brand-300 to-brand-400 hover:from-brand-200 hover:to-brand-300 px-4 py-2.5 rounded-xl shadow-[0_0_25px_rgba(0,196,159,0.35)] transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-champagne-500 hover:bg-champagne-400 text-slate-950 font-bold text-xs font-mono tracking-wider transition-all transform hover:-translate-y-0.5 shadow-[0_0_20px_rgba(185,154,104,0.3)]"
             >
-              <Calendar className="w-4 h-4" />
-              <span>Book VIP Slot</span>
+              <Calendar className="w-3.5 h-3.5" />
+              <span>BOOK VIP SLOT</span>
             </button>
 
-            {/* Mobile menu toggle */}
+            {/* Mobile Hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-neutral-400 hover:text-white rounded-lg border border-white/10"
-              aria-label="Toggle menu"
+              className="lg:hidden p-2 rounded-xl bg-graphite border border-white/10 text-neutral-300 hover:text-white"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
+
         </div>
 
-        {/* Mobile dropdown */}
+        {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-surface-raised border-b border-white/10 px-4 pt-3 pb-6 mt-3 space-y-3">
-            <a
-              href="#anatomy-3d"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-medium text-neutral-200 py-1.5"
-            >
-              3D Anatomy of Vision
-            </a>
-            <a
-              href="#brands"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-medium text-neutral-200 py-1.5"
-            >
-              Curated Brands (Ray-Ban, Oakley, Prada)
-            </a>
-            <a
-              href="#calculator"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-medium text-brand-300 py-1.5"
-            >
-              ₹20,000 Corporate Benefit Calculator
-            </a>
-            <a
-              href="#lens-lab"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-medium text-neutral-200 py-1.5"
-            >
-              Lens Lab & Doctor Reels
-            </a>
-            <a
-              href="#hospital-care"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-medium text-neutral-200 py-1.5"
-            >
-              Global Eye Hospital Connection & Legacy
-            </a>
-            <div className="pt-2 border-t border-white/10 flex gap-2">
-              <a
-                href={EYERIS_LOCATION_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 text-center py-2 text-xs bg-surface border border-white/10 rounded-lg text-neutral-300"
-              >
-                Directions (KPHB Rd #1)
-              </a>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenBooking();
-                }}
-                className="flex-1 text-center py-2 text-xs bg-brand-400 font-semibold text-slate-950 rounded-lg"
-              >
-                Book Appointment
-              </button>
+          <div className="lg:hidden bg-graphite border-b border-white/10 px-6 py-6 space-y-4">
+            <div className="flex flex-col gap-3 text-sm font-mono text-neutral-300">
+              <a href="#story" onClick={() => setMobileMenuOpen(false)} className="hover:text-champagne-400">01. Heritage &amp; Trust</a>
+              <a href="#collections" onClick={() => setMobileMenuOpen(false)} className="hover:text-champagne-400">02. Curated Collections</a>
+              <a href="#brands" onClick={() => setMobileMenuOpen(false)} className="hover:text-champagne-400">03. International Brands</a>
+              <a href="#anatomy-3d" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand-300">04. 3D Anatomy of Vision</a>
+              <a href="#lens-lab" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand-300">05. Lens Lab &amp; Science</a>
+              {onOpenLensFinder && (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenLensFinder();
+                  }}
+                  className="text-left text-brand-300 hover:text-white flex items-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+                  <span>06. AI Lens Finder Quiz</span>
+                </button>
+              )}
+              <a href="#calculator" onClick={() => setMobileMenuOpen(false)} className="hover:text-champagne-400">07. ₹20,000 Corporate Claim</a>
+              <a href="#reels" onClick={() => setMobileMenuOpen(false)} className="hover:text-champagne-400">08. EYERIS Journal</a>
+              <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-champagne-400">09. Visit Showroom</a>
+              <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="text-brand-400 pt-2 border-t border-white/10 flex items-center gap-1">
+                <Lock className="w-3.5 h-3.5" /> Staff Console &amp; CRM
+              </Link>
             </div>
           </div>
         )}

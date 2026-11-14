@@ -13,7 +13,7 @@ export const ReelsSection: React.FC<ReelsSectionProps> = ({ onOpenBooking }) => 
   const [activeReel, setActiveReel] = useState<ReelItem | null>(null);
 
   return (
-    <section id="lens-lab" className="py-20 bg-surface-raised/60 border-b border-white/5 relative">
+    <section id="reels" className="py-20 bg-surface-raised/60 border-b border-white/5 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">

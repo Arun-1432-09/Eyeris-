@@ -42,3 +42,7 @@ export function generateQuickChatUrl(topic: string): string {
   const message = `Hello Eyeris Opticals! I'm interested in *${topic}* at your KPHB Road No. 1 store. Could you share more details on availability & pricing?`;
   return `https://wa.me/${EYERIS_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
+
+export function createWhatsAppBookingLink(customMessage: string): string {
+  return `https://wa.me/${EYERIS_WHATSAPP_NUMBER}?text=${encodeURIComponent(customMessage)}`;
+}
