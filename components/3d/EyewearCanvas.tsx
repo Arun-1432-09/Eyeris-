@@ -80,33 +80,33 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     rendererRef.current = renderer;
 
     // 4. Dramatic Studio Overhead & Rim Spotlights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
     scene.add(ambientLight);
 
     // Key Overhead Spotlight
-    const keyLight = new THREE.DirectionalLight(0xffffff, 3.4);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 3.2);
     keyLight.position.set(4, 8, 5);
     scene.add(keyLight);
 
     // Rim Backlight (Accentuates acetate bevels and metallic chamfers)
-    const rimLight = new THREE.DirectionalLight(0xd8dee8, 3.0);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 2.2);
     rimLight.position.set(-5, 4, -4);
     scene.add(rimLight);
 
     // Subtle Ground Fill Light
-    const fillLight = new THREE.DirectionalLight(0x333333, 1.2);
+    const fillLight = new THREE.DirectionalLight(0xefefef, 1.4);
     fillLight.position.set(0, -6, 2);
     scene.add(fillLight);
 
-    // 5. Soft Ground Contact Shadow on Dark Reflective Pedestal
+    // 5. Soft Ground Contact Shadow on Studio White Pedestal
     const shadowCanvas = document.createElement('canvas');
     shadowCanvas.width = 256;
     shadowCanvas.height = 256;
     const sCtx = shadowCanvas.getContext('2d');
     if (sCtx) {
       const gradient = sCtx.createRadialGradient(128, 128, 15, 128, 128, 125);
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 0.95)');
-      gradient.addColorStop(0.4, 'rgba(0, 0, 0, 0.5)');
+      gradient.addColorStop(0, 'rgba(0, 0, 0, 0.4)');
+      gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.12)');
       gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
       sCtx.fillStyle = gradient;
       sCtx.fillRect(0, 0, 256, 256);
@@ -116,7 +116,7 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     const shadowMat = new THREE.MeshBasicMaterial({
       map: shadowTexture,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.65,
       depthWrite: false,
     });
     const shadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
@@ -474,25 +474,25 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
   };
 
   return (
-    <section id="anatomy-3d" className="py-24 sm:py-36 bg-[#050505] text-white border-b border-[#292929] relative overflow-hidden">
+    <section id="anatomy-3d" className="py-24 sm:py-36 bg-white text-[#111111] border-b border-[#E5E5E5] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         
         {/* Section Header */}
         <ScrollReveal variant="fadeUp" className="max-w-3xl mb-12 sm:mb-16">
-          <div className="text-[11px] font-mono tracking-[0.3em] uppercase text-[#707070] mb-3">
+          <div className="text-[11px] font-mono tracking-[0.3em] uppercase text-[#888888] mb-3">
             INTERACTIVE THREE.JS STUDIO
           </div>
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#111111] leading-tight">
             Anatomy of Precision.{' '}
-            <span className="font-light text-[#A1A1A6]">Living Optics.</span>
+            <span className="font-light text-[#666666]">Living Optics.</span>
           </h2>
-          <p className="text-sm sm:text-base text-[#A1A1A6] font-light mt-4 leading-relaxed">
+          <p className="text-sm sm:text-base text-[#666666] font-light mt-4 leading-relaxed">
             Inspect the hand-polished Italian acetate, German beta-titanium core, and test real-time Transitions® photochromic dye activation under dynamic sunlight.
           </p>
         </ScrollReveal>
 
-        {/* 3D Viewport Card in Luxury Dark Showroom */}
-        <div className="relative w-full h-[540px] sm:h-[640px] rounded-3xl bg-[#101010] border border-[#292929] shadow-luxury-lg overflow-hidden cursor-grab active:cursor-grabbing">
+        {/* 3D Viewport Card in Luxury White Studio Pedestal */}
+        <div className="relative w-full h-[540px] sm:h-[640px] rounded-3xl bg-[#F7F7F7] border border-[#E5E5E5] shadow-lg overflow-hidden cursor-grab active:cursor-grabbing">
           {/* Canvas Mount */}
           <div ref={mountRef} className="w-full h-full" />
 
@@ -502,8 +502,8 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
               onClick={() => selectPreset('assembled')}
               className={`px-4 py-1.5 rounded-full text-xs font-mono tracking-wider transition ${
                 activePreset === 'assembled'
-                  ? 'bg-white text-black font-semibold shadow-sm'
-                  : 'bg-black/60 backdrop-blur-md border border-[#292929] text-[#A1A1A6] hover:text-white'
+                  ? 'bg-[#111111] text-white font-semibold shadow-sm'
+                  : 'bg-white/80 backdrop-blur-md border border-[#E5E5E5] text-[#666666] hover:text-[#111111]'
               }`}
             >
               Assembled
@@ -512,8 +512,8 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
               onClick={() => selectPreset('exploded')}
               className={`px-4 py-1.5 rounded-full text-xs font-mono tracking-wider transition ${
                 activePreset === 'exploded'
-                  ? 'bg-white text-black font-semibold shadow-sm'
-                  : 'bg-black/60 backdrop-blur-md border border-[#292929] text-[#A1A1A6] hover:text-white'
+                  ? 'bg-[#111111] text-white font-semibold shadow-sm'
+                  : 'bg-white/80 backdrop-blur-md border border-[#E5E5E5] text-[#666666] hover:text-[#111111]'
               }`}
             >
               Exploded Assembly
@@ -522,8 +522,8 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
               onClick={() => selectPreset('sunlight')}
               className={`px-4 py-1.5 rounded-full text-xs font-mono tracking-wider transition flex items-center gap-1.5 ${
                 activePreset === 'sunlight'
-                  ? 'bg-white text-black font-semibold shadow-sm'
-                  : 'bg-black/60 backdrop-blur-md border border-[#292929] text-[#A1A1A6] hover:text-white'
+                  ? 'bg-[#111111] text-white font-semibold shadow-sm'
+                  : 'bg-white/80 backdrop-blur-md border border-[#E5E5E5] text-[#666666] hover:text-[#111111]'
               }`}
             >
               <Sun className="w-3.5 h-3.5 text-[#D4AF37]" />
@@ -533,11 +533,11 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
               onClick={() => selectPreset('drivesafe')}
               className={`px-4 py-1.5 rounded-full text-xs font-mono tracking-wider transition flex items-center gap-1.5 ${
                 activePreset === 'drivesafe'
-                  ? 'bg-white text-black font-semibold shadow-sm'
-                  : 'bg-black/60 backdrop-blur-md border border-[#292929] text-[#A1A1A6] hover:text-white'
+                  ? 'bg-[#111111] text-white font-semibold shadow-sm'
+                  : 'bg-white/80 backdrop-blur-md border border-[#E5E5E5] text-[#666666] hover:text-[#111111]'
               }`}
             >
-              <Moon className="w-3.5 h-3.5 text-white" />
+              <Moon className="w-3.5 h-3.5 text-[#111111]" />
               <span>ZEISS DriveSafe</span>
             </button>
           </div>
@@ -546,9 +546,9 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
           <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20">
             <button
               onClick={() => setIsAutoRotating(!isAutoRotating)}
-              className="px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-[#292929] text-[#A1A1A6] hover:text-white text-xs font-mono flex items-center gap-1.5"
+              className="px-3.5 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-[#E5E5E5] text-[#666666] hover:text-[#111111] text-xs font-mono flex items-center gap-1.5 shadow-sm"
             >
-              <RotateCw className={`w-3.5 h-3.5 ${isAutoRotating ? 'text-white animate-spin-slow' : 'text-[#707070]'}`} />
+              <RotateCw className={`w-3.5 h-3.5 ${isAutoRotating ? 'text-[#111111] animate-spin-slow' : 'text-[#888888]'}`} />
               <span>{isAutoRotating ? 'Auto-Rotate' : 'Paused'}</span>
             </button>
           </div>
@@ -557,20 +557,20 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
           {explosionProgress > 0.4 && (
             <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-8 sm:p-12 animate-in fade-in duration-300">
               {/* Callout 1: Aspheric Lens */}
-              <div className="self-center bg-black/80 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5 text-[11px] font-mono text-white shadow-lg flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="self-center bg-white/95 backdrop-blur-md border border-[#E5E5E5] rounded-full px-4 py-1.5 text-[11px] font-mono text-[#111111] shadow-md flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span>1.67 Aspheric High-Index Optical Glass with Multi-Layer AR</span>
               </div>
 
               {/* Callout 2 & 3: Bridge & Acetate Rim */}
               <div className="flex justify-between w-full max-w-2xl mx-auto">
-                <div className="bg-black/80 backdrop-blur-md border border-white/20 rounded-full px-3.5 py-1 text-[10px] font-mono text-[#A1A1A6]">
+                <div className="bg-white/95 backdrop-blur-md border border-[#E5E5E5] rounded-full px-3.5 py-1 text-[10px] font-mono text-[#666666] shadow-sm">
                   Hand-Polished Italian Acetate
                 </div>
-                <div className="bg-black/80 backdrop-blur-md border border-[#D4AF37]/50 rounded-full px-3.5 py-1 text-[10px] font-mono text-[#D4AF37]">
+                <div className="bg-white/95 backdrop-blur-md border border-[#D4AF37]/60 rounded-full px-3.5 py-1 text-[10px] font-mono text-[#111111] shadow-sm font-semibold">
                   German Beta-Titanium Core
                 </div>
-                <div className="bg-black/80 backdrop-blur-md border border-white/20 rounded-full px-3.5 py-1 text-[10px] font-mono text-[#A1A1A6]">
+                <div className="bg-white/95 backdrop-blur-md border border-[#E5E5E5] rounded-full px-3.5 py-1 text-[10px] font-mono text-[#666666] shadow-sm">
                   18K Gold 5-Barrel Spring Hinge
                 </div>
               </div>
@@ -578,17 +578,17 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
           )}
 
           {/* Real-Life Lens Physics Simulator HUD */}
-          <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 bg-[#050505]/92 backdrop-blur-2xl border border-[#292929] rounded-2xl p-4 sm:p-5 shadow-2xl z-20 space-y-3">
+          <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 bg-white/95 backdrop-blur-2xl border border-[#E5E5E5] rounded-2xl p-4 sm:p-5 shadow-xl z-20 space-y-3">
             
             {/* Row 1: UV Sunlight Slider */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-3 border-b border-[#292929]">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-3 border-b border-[#E5E5E5]">
               <div className="flex items-center gap-3 w-full md:w-auto">
-                <Sun className={`w-4 h-4 ${sunlightUV > 20 ? 'text-[#D4AF37] animate-pulse' : 'text-[#707070]'}`} />
+                <Sun className={`w-4 h-4 ${sunlightUV > 20 ? 'text-[#D4AF37] animate-pulse' : 'text-[#888888]'}`} />
                 <div>
-                  <span className="text-xs font-mono font-bold text-white block">
+                  <span className="text-xs font-mono font-bold text-[#111111] block">
                     UV Sunlight Intensity: {sunlightUV}%
                   </span>
-                  <span className="text-[10px] font-mono text-[#A1A1A6]">
+                  <span className="text-[10px] font-mono text-[#666666]">
                     {sunlightUV < 15
                       ? 'Clear Indoor Optics (98% Light Transmission)'
                       : sunlightUV < 60
@@ -600,7 +600,7 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
 
               {/* Slider Input */}
               <div className="flex items-center gap-3 w-full md:w-72">
-                <span className="text-[10px] font-mono text-[#707070]">INDOOR</span>
+                <span className="text-[10px] font-mono text-[#888888]">INDOOR</span>
                 <input
                   type="range"
                   min="0"
@@ -610,28 +610,28 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
                     setSunlightUV(parseInt(e.target.value));
                     setIsAutoRotating(false);
                   }}
-                  className="w-full h-1 bg-[#292929] rounded appearance-none cursor-pointer accent-white"
+                  className="w-full h-1 bg-[#E5E5E5] rounded appearance-none cursor-pointer accent-[#111111]"
                 />
-                <span className="text-[10px] font-mono text-[#D4AF37] font-bold">100% UV</span>
+                <span className="text-[10px] font-mono text-[#111111] font-bold">100% UV</span>
               </div>
 
               {/* Transitions® Shade Swatches */}
               <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-                <span className="text-[10px] font-mono text-[#707070] mr-1">Shade:</span>
+                <span className="text-[10px] font-mono text-[#888888] mr-1">Shade:</span>
                 <button
                   onClick={() => setActiveTint('graphite')}
                   title="Graphite Grey"
-                  className={`w-5 h-5 rounded-full bg-neutral-900 border transition ${activeTint === 'graphite' ? 'border-white ring-2 ring-white/40' : 'border-neutral-700'}`}
+                  className={`w-5 h-5 rounded-full bg-neutral-900 border transition ${activeTint === 'graphite' ? 'border-[#111111] ring-2 ring-[#111111]/30' : 'border-neutral-400'}`}
                 />
                 <button
                   onClick={() => setActiveTint('emerald')}
                   title="Emerald Green"
-                  className={`w-5 h-5 rounded-full bg-emerald-950 border transition ${activeTint === 'emerald' ? 'border-white ring-2 ring-emerald-500/40' : 'border-neutral-700'}`}
+                  className={`w-5 h-5 rounded-full bg-emerald-900 border transition ${activeTint === 'emerald' ? 'border-[#111111] ring-2 ring-emerald-500/30' : 'border-neutral-400'}`}
                 />
                 <button
                   onClick={() => setActiveTint('amber')}
                   title="Amber Brown"
-                  className={`w-5 h-5 rounded-full bg-amber-950 border transition ${activeTint === 'amber' ? 'border-white ring-2 ring-amber-500/40' : 'border-neutral-700'}`}
+                  className={`w-5 h-5 rounded-full bg-amber-900 border transition ${activeTint === 'amber' ? 'border-[#111111] ring-2 ring-amber-500/30' : 'border-neutral-400'}`}
                 />
               </div>
             </div>
@@ -640,9 +640,9 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
             <div className="flex flex-wrap items-center justify-between gap-3 pt-0.5">
               <div className="flex flex-wrap items-center gap-2">
                 {/* Explode Slider */}
-                <div className="flex items-center gap-2 bg-[#101010] border border-[#292929] px-3 py-1.5 rounded-full">
-                  <Layers className="w-3.5 h-3.5 text-white" />
-                  <span className="text-[11px] font-mono text-[#A1A1A6]">Explode:</span>
+                <div className="flex items-center gap-2 bg-[#F7F7F7] border border-[#E5E5E5] px-3 py-1.5 rounded-full">
+                  <Layers className="w-3.5 h-3.5 text-[#111111]" />
+                  <span className="text-[11px] font-mono text-[#666666]">Explode:</span>
                   <input
                     type="range"
                     min="0"
@@ -653,9 +653,9 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
                       setExplosionProgress(parseFloat(e.target.value));
                       setIsAutoRotating(false);
                     }}
-                    className="w-20 h-1 bg-[#292929] rounded appearance-none cursor-pointer accent-white"
+                    className="w-20 h-1 bg-[#E5E5E5] rounded appearance-none cursor-pointer accent-[#111111]"
                   />
-                  <span className="text-[11px] font-mono text-white">{Math.round(explosionProgress * 100)}%</span>
+                  <span className="text-[11px] font-mono text-[#111111] font-semibold">{Math.round(explosionProgress * 100)}%</span>
                 </div>
 
                 {/* Blue-Cut Toggle */}
@@ -663,8 +663,8 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
                   onClick={() => setIsBlueCutActive(!isBlueCutActive)}
                   className={`px-3 py-1.5 rounded-full text-xs font-mono transition flex items-center gap-1.5 ${
                     isBlueCutActive
-                      ? 'bg-white text-black font-semibold'
-                      : 'border border-[#292929] text-[#A1A1A6] hover:text-white'
+                      ? 'bg-[#111111] text-white font-semibold'
+                      : 'border border-[#E5E5E5] text-[#666666] hover:text-[#111111]'
                   }`}
                 >
                   <Eye className="w-3 h-3" />
@@ -675,7 +675,7 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
               {/* Book In-Store Lens Test CTA */}
               <button
                 onClick={onOpenBooking}
-                className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-mono font-semibold text-xs tracking-wider transition shadow-sm whitespace-nowrap"
+                className="px-5 py-2 rounded-full bg-[#111111] hover:bg-neutral-800 text-white font-mono font-semibold text-xs tracking-wider transition shadow-sm whitespace-nowrap"
               >
                 SCHEDULE IN-STORE LENS TEST
               </button>

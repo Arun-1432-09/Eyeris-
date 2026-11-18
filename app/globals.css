@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
-  color-scheme: dark;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  color-scheme: light;
 }
 
 body {
-  background-color: #050505;
-  color: #FFFFFF;
+  background-color: #FFFFFF;
+  color: #111111;
   font-family: var(--font-sans);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -17,72 +17,84 @@ body {
 }
 
 ::selection {
-  background-color: #FFFFFF;
-  color: #050505;
+  background-color: #111111;
+  color: #FFFFFF;
 }
 
-/* Black Luxury Glassmorphic Utilities */
+/* Minimal Apple Glassmorphic Utilities */
 .luxury-glass {
-  background: rgba(16, 16, 16, 0.7);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid #E5E5E5;
 }
 
 .luxury-card {
-  background: #101010;
-  border: 1px solid #292929;
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .luxury-card:hover {
-  border-color: #444444;
+  border-color: #111111;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
 
-/* Mirrored Floor Reflection Utility */
-.floor-reflection {
-  -webkit-box-reflect: below 2px linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.18) 100%);
+/* Soft Contact Shadow for Eyewear on White Canvas */
+.contact-shadow {
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.04) 50%, rgba(0, 0, 0, 0) 75%);
+  filter: blur(5px);
+  border-radius: 50%;
 }
 
 /* Light Sweep Keyframe Animation */
 @keyframes lightSweep {
   0% {
-    transform: translateX(-150%) rotate(35deg);
+    transform: translateX(-150%) rotate(25deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.6;
+  }
+  70% {
+    opacity: 0.6;
   }
   100% {
-    transform: translateX(250%) rotate(35deg);
+    transform: translateX(250%) rotate(25deg);
+    opacity: 0;
   }
 }
 
 .animate-light-sweep {
-  animation: lightSweep 0.8s ease-in-out forwards;
+  animation: lightSweep 0.7s ease-in-out forwards;
 }
 
-/* Dark Custom Scrollbar */
+/* Minimal Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #050505;
+  background: #F7F7F7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #292929;
+  background: #D1D1D6;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #444444;
+  background: #999999;
 }
 
-/* Hide scrollbar utility */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

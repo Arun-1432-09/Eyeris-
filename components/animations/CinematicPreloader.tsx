@@ -37,30 +37,30 @@ export const CinematicPreloader: React.FC = () => {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex flex-col items-center justify-between bg-[#050505] text-white px-6 py-12 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none select-none ${
+      className={`fixed inset-0 z-[100] flex flex-col items-center justify-between bg-white text-[#111111] px-6 py-12 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none select-none ${
         isDone ? '-translate-y-full' : 'translate-y-0'
       }`}
     >
       {/* Top Header */}
-      <div className="w-full max-w-6xl flex items-center justify-between text-[11px] font-mono text-[#707070]">
+      <div className="w-full max-w-6xl flex items-center justify-between text-[11px] font-mono text-[#888888]">
         <span className="tracking-[0.25em] uppercase">EST. HYDERABAD</span>
-        <span className="tracking-[0.25em] uppercase text-white">40 YEARS OPTICAL EXPERTISE</span>
+        <span className="tracking-[0.25em] uppercase text-[#111111] font-semibold">40 YEARS OPTICAL EXPERTISE</span>
       </div>
 
       {/* Center Logo & Statement */}
       <div className="flex flex-col items-center text-center my-auto space-y-6">
-        <EyerisWhiteLogo size="lg" />
+        <EyerisWhiteLogo size="lg" theme="light" />
 
-        <p className="text-xs font-mono tracking-[0.25em] text-[#A1A1A6] uppercase max-w-sm mt-3">
+        <p className="text-xs font-mono tracking-[0.25em] text-[#666666] uppercase max-w-sm mt-3">
           Where Personal Style Meets Clinical Vision
         </p>
       </div>
 
       {/* Bottom Counter & Corridor Notice */}
-      <div className="w-full max-w-6xl flex items-end justify-between border-t border-[#1C1C1C] pt-4 text-[11px] font-mono">
-        <span className="text-[#707070]">KPHB ROAD NO. 1 // GLOBAL EYE HOSPITAL GROUND CORRIDOR</span>
+      <div className="w-full max-w-6xl flex items-end justify-between border-t border-[#E5E5E5] pt-4 text-[11px] font-mono">
+        <span className="text-[#888888]">KPHB ROAD NO. 1 // GLOBAL EYE HOSPITAL GROUND CORRIDOR</span>
         <div className="text-right">
-          <span className="text-xl sm:text-2xl font-mono font-bold text-white tracking-wider">
+          <span className="text-xl sm:text-2xl font-mono font-bold text-[#111111] tracking-wider">
             {Math.min(100, progress)}%
           </span>
         </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Heart, MessageCircle, ArrowRight, Eye, Sparkles } from 'lucide-react';
+import { Heart, MessageCircle } from 'lucide-react';
 import { SHOWCASE_CATALOG, ShowcaseProduct } from '@/data/eyerisData';
 import { ProductDetailModal } from './ProductDetailModal';
 import { createWhatsAppBookingLink } from '@/components/booking/WhatsAppSync';
@@ -67,30 +67,30 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onOpenBooking 
   });
 
   return (
-    <section id="showcase" className="py-24 sm:py-32 bg-[#050505] text-white border-b border-[#292929]">
+    <section id="showcase" className="py-24 sm:py-32 bg-white text-[#111111] border-b border-[#E5E5E5]">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         
         {/* Section Header */}
         <ScrollReveal variant="fadeUp" className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <div className="text-[11px] font-mono tracking-[0.3em] uppercase text-[#707070] mb-3">
+            <div className="text-[11px] font-mono tracking-[0.3em] uppercase text-[#888888] mb-3">
               CURATED EYEWEAR VAULT
             </div>
-            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#111111] leading-tight">
               Branded Showcase.{' '}
-              <span className="font-light text-[#A1A1A6]">Verified Specs.</span>
+              <span className="font-light text-[#666666]">Verified Specs.</span>
             </h2>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-mono text-[#A1A1A6]">
-            <span className="w-2 h-2 rounded-full bg-white" />
+          <div className="flex items-center gap-2 text-xs font-mono text-[#666666]">
+            <span className="w-2 h-2 rounded-full bg-[#111111]" />
             <span>Exclusively Authorised International Brands</span>
           </div>
         </ScrollReveal>
 
         {/* Filters: Category & Brand Switcher */}
         <ScrollReveal variant="fadeUp" delay={0.1}>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#292929] mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E5E5E5] mb-8">
             {/* Category Pills */}
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
               {categories.map((cat) => (
@@ -99,8 +99,8 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onOpenBooking 
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-4 py-1.5 rounded-full text-xs font-mono tracking-wider transition ${
                     selectedCategory === cat
-                      ? 'bg-white text-black font-semibold'
-                      : 'border border-[#292929] text-[#A1A1A6] hover:text-white hover:border-neutral-500'
+                      ? 'bg-[#111111] text-white font-semibold shadow-sm'
+                      : 'border border-[#E5E5E5] text-[#666666] hover:text-[#111111] hover:border-[#111111]'
                   }`}
                 >
                   {cat}
@@ -116,8 +116,8 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onOpenBooking 
                   onClick={() => setSelectedBrand(b)}
                   className={`px-3 py-1 rounded-full text-[11px] font-mono whitespace-nowrap transition ${
                     selectedBrand === b
-                      ? 'bg-[#1E1E1E] text-white border border-white/40'
-                      : 'text-[#707070] hover:text-[#A1A1A6]'
+                      ? 'bg-[#111111] text-white font-medium'
+                      : 'text-[#888888] hover:text-[#111111]'
                   }`}
                 >
                   {b}
@@ -138,10 +138,10 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onOpenBooking 
                 variant="fadeUp"
                 delay={idx * 0.05}
               >
-                <div className="group rounded-3xl bg-[#101010] border border-[#292929] hover:border-white/30 transition-all duration-300 p-5 flex flex-col justify-between h-full shadow-luxury-sm hover:shadow-luxury-md">
+                <div className="group rounded-3xl bg-white border border-[#E5E5E5] hover:border-[#111111]/40 hover:shadow-lg transition-all duration-300 p-5 flex flex-col justify-between h-full">
                   <div>
                     {/* Image Container with Wishlist Button */}
-                    <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-black mb-4 flex items-center justify-center p-4">
+                    <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-[#F7F7F7] mb-4 flex items-center justify-center p-4">
                       <img
                         src={product.image}
                         alt={product.name}
@@ -154,44 +154,44 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onOpenBooking 
                           e.stopPropagation();
                           toggleWishlist(product);
                         }}
-                        className="absolute top-3 right-3 p-2 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-white hover:bg-white hover:text-black transition"
+                        className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-md border border-[#E5E5E5] text-[#111111] hover:bg-[#111111] hover:text-white transition shadow-sm"
                         aria-label="Wishlist"
                       >
                         <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
                       </button>
 
                       {product.isKids && (
-                        <span className="absolute top-3 left-3 text-[9px] font-mono uppercase bg-white/15 backdrop-blur-md text-white px-2 py-0.5 rounded-full border border-white/20">
+                        <span className="absolute top-3 left-3 text-[9px] font-mono uppercase bg-[#111111]/10 backdrop-blur-md text-[#111111] px-2 py-0.5 rounded-full border border-[#111111]/15 font-semibold">
                           Kids Range
                         </span>
                       )}
                     </div>
 
                     {/* Brand & Type */}
-                    <div className="flex items-center justify-between text-[10px] font-mono text-[#A1A1A6] mb-1">
-                      <span className="uppercase tracking-wider font-semibold text-white">
+                    <div className="flex items-center justify-between text-[10px] font-mono text-[#666666] mb-1">
+                      <span className="uppercase tracking-wider font-semibold text-[#111111]">
                         {product.brand}
                       </span>
                       <span>{product.type}</span>
                     </div>
 
-                    <h3 className="text-sm font-bold text-white mb-2 leading-snug truncate group-hover:text-white">
+                    <h3 className="text-sm font-bold text-[#111111] mb-2 leading-snug truncate group-hover:text-black">
                       {product.name}
                     </h3>
 
                     {/* Shape, Material & Colour */}
-                    <div className="text-[11px] font-mono text-[#707070] space-y-1 mb-4">
-                      <p>Shape: <span className="text-[#A1A1A6]">{product.shape}</span></p>
-                      <p>Material: <span className="text-[#A1A1A6]">{product.material}</span></p>
-                      <p>Colour: <span className="text-[#A1A1A6]">{product.colour}</span></p>
+                    <div className="text-[11px] font-mono text-[#888888] space-y-1 mb-4">
+                      <p>Shape: <span className="text-[#111111]">{product.shape}</span></p>
+                      <p>Material: <span className="text-[#111111]">{product.material}</span></p>
+                      <p>Colour: <span className="text-[#111111]">{product.colour}</span></p>
                     </div>
                   </div>
 
                   {/* Bottom Actions: View Details & WhatsApp Enquiry */}
-                  <div className="pt-3 border-t border-[#292929] flex items-center gap-2">
+                  <div className="pt-3 border-t border-[#E5E5E5] flex items-center gap-2">
                     <button
                       onClick={() => setActiveProduct(product)}
-                      className="flex-1 py-2 px-3 rounded-full border border-[#292929] hover:bg-white hover:text-black text-white text-xs font-mono font-medium tracking-wider transition text-center"
+                      className="flex-1 py-2 px-3 rounded-full border border-[#E5E5E5] hover:bg-[#111111] hover:text-white text-[#111111] text-xs font-mono font-medium tracking-wider transition text-center"
                     >
                       View Details →
                     </button>
@@ -202,7 +202,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onOpenBooking 
                       )}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-full border border-[#292929] hover:bg-white/10 text-[#A1A1A6] hover:text-white transition"
+                      className="p-2 rounded-full border border-[#E5E5E5] hover:bg-[#111111] hover:text-white text-[#666666] transition"
                       aria-label="Enquire on WhatsApp"
                     >
                       <MessageCircle className="w-3.5 h-3.5" />

@@ -9,44 +9,45 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Master Prompt Section 3 Tokens: Black Luxury
+        // Minimal Apple Design: White Background & Black Text
         bg: {
-          DEFAULT: "#050505",
-          2: "#101010",
-          elevated: "#171717",
+          DEFAULT: "#FFFFFF",
+          2: "#F7F7F7",
+          elevated: "#FFFFFF",
         },
-        background: "#050505",
+        background: "#FFFFFF",
+        "background-2": "#F7F7F7",
         surface: {
-          DEFAULT: "#101010",
-          raised: "#171717",
-          elevated: "#1E1E1E",
-          border: "#292929",
+          DEFAULT: "#FFFFFF",
+          raised: "#F7F7F7",
+          elevated: "#FFFFFF",
+          border: "#E5E5E5",
         },
         text: {
-          DEFAULT: "#FFFFFF",
-          2: "#A1A1A6",
-          muted: "#707070",
+          DEFAULT: "#111111",
+          2: "#666666",
+          muted: "#888888",
         },
         border: {
-          DEFAULT: "#292929",
-          subtle: "#1C1C1C",
+          DEFAULT: "#E5E5E5",
+          subtle: "#F0F0F0",
         },
         accent: {
-          DEFAULT: "#D8DEE8",
-          hover: "#FFFFFF",
+          DEFAULT: "#111111",
+          hover: "#000000",
         },
         gold: {
           DEFAULT: "#D4AF37",
-          subtle: "#AA8C2C",
+          subtle: "#B89635",
         },
       },
       fontFamily: {
         sans: [
+          '"Inter"',
           "-apple-system",
           "BlinkMacSystemFont",
           '"SF Pro Display"',
           '"SF Pro Text"',
-          '"Inter"',
           '"Helvetica Neue"',
           "sans-serif",
         ],
@@ -58,24 +59,20 @@ const config: Config = {
         ],
         mono: [
           '"SF Mono"',
-          '"Space Grotesk"',
-          "ui-monospace",
+          '"JetBrains Mono"',
           "monospace",
         ],
       },
+      fontSize: {
+        "display-large": ["clamp(2.75rem, 5.5vw, 4.5rem)", { lineHeight: "1.05", letterSpacing: "-0.03em" }],
+        "display-medium": ["clamp(2rem, 4vw, 3.25rem)", { lineHeight: "1.1", letterSpacing: "-0.025em" }],
+        "headline-large": ["clamp(1.5rem, 2.75vw, 2.25rem)", { lineHeight: "1.15", letterSpacing: "-0.02em" }],
+        "headline-medium": ["clamp(1.2rem, 2vw, 1.6rem)", { lineHeight: "1.25", letterSpacing: "-0.015em" }],
+        "eyebrow": ["clamp(0.6875rem, 0.85vw, 0.8125rem)", { lineHeight: "1.4", letterSpacing: "0.2em" }],
+      },
       transitionTimingFunction: {
         "expo-out": "cubic-bezier(0.16, 1, 0.3, 1)",
-        "power3-in-out": "cubic-bezier(0.77, 0, 0.175, 1)",
-      },
-      animation: {
-        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "spin-slow": "spin 20s linear infinite",
-      },
-      boxShadow: {
-        "luxury-sm": "0 2px 12px rgba(0, 0, 0, 0.6)",
-        "luxury-md": "0 8px 30px rgba(0, 0, 0, 0.8)",
-        "luxury-lg": "0 20px 60px rgba(0, 0, 0, 0.95)",
-        "glow-accent": "0 0 40px rgba(216, 222, 232, 0.08)",
+        "power3-in-out": "cubic-bezier(0.65, 0, 0.35, 1)",
       },
     },
   },

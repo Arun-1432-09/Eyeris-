@@ -12,25 +12,25 @@ export const BrandIntro: React.FC = () => {
   ];
 
   return (
-    <section className="py-24 sm:py-36 bg-[#050505] text-white border-b border-[#292929] relative overflow-hidden">
+    <section className="py-24 sm:py-36 bg-[#FFFFFF] text-[#111111] border-b border-[#E5E5E5] relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-8 text-center relative z-10">
         
         {/* Eyebrow */}
         <ScrollReveal variant="fadeUp">
-          <div className="inline-block text-[11px] font-mono tracking-[0.3em] uppercase text-[#707070] mb-6">
+          <div className="inline-block text-[11px] font-mono tracking-[0.25em] uppercase text-[#888888] font-bold mb-6">
             EST. KPHB ROAD NO. 1 // HYDERABAD
           </div>
         </ScrollReveal>
 
         {/* Master Heading */}
         <ScrollReveal variant="fadeUp" delay={0.1}>
-          <h2 className="text-4xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-10 leading-none">
-            VISION. <span className="font-light text-[#A1A1A6]">PERFECTED.</span>
+          <h2 className="text-4xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight text-[#111111] mb-10 leading-none">
+            VISION. <span className="font-light text-[#777777]">PERFECTED.</span>
           </h2>
         </ScrollReveal>
 
-        {/* Scroll-Scrubbed Masked Words Reveal */}
-        <div className="max-w-3xl mx-auto text-xl sm:text-3xl font-light text-[#A1A1A6] leading-relaxed flex flex-wrap justify-center gap-x-2.5 gap-y-1.5">
+        {/* Scroll-Scrubbed Words Reveal */}
+        <div className="max-w-3xl mx-auto text-xl sm:text-3xl font-light text-[#666666] leading-relaxed flex flex-wrap justify-center gap-x-2.5 gap-y-1.5">
           {words.map((word, idx) => (
             <ScrollReveal
               key={idx}
@@ -38,7 +38,7 @@ export const BrandIntro: React.FC = () => {
               delay={0.15 + (idx % 8) * 0.04}
               className="inline-block"
             >
-              <span className={word === 'trust.' || word === 'experience.' || word === 'dispensing.' ? 'text-white font-medium' : ''}>
+              <span className={word === 'trust.' || word === 'experience.' || word === 'dispensing.' ? 'text-[#111111] font-semibold' : ''}>
                 {word}
               </span>
             </ScrollReveal>
@@ -47,7 +47,7 @@ export const BrandIntro: React.FC = () => {
 
         {/* Differentiator note */}
         <ScrollReveal variant="fadeUp" delay={0.4}>
-          <p className="text-xs sm:text-sm font-mono text-[#707070] uppercase tracking-widest mt-12 max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm font-mono text-[#888888] uppercase tracking-widest mt-12 max-w-xl mx-auto">
             Practical luxury pricing • No mass-market compromises • Ground-floor Global Eye Hospital corridor
           </p>
         </ScrollReveal>

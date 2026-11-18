@@ -9,8 +9,7 @@ import {
   Eye, 
   Layers, 
   MapPin,
-  Check,
-  Plus
+  Check
 } from 'lucide-react';
 import { RUNWAY_PRODUCTS, DEPTH_SLOTS, BUSINESS_INFO, ShowcaseProduct } from '@/data/eyerisData';
 import { createWhatsAppBookingLink, EYERIS_LOCATION_URL } from '@/components/booking/WhatsAppSync';
@@ -110,7 +109,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentIndex, isAnimating]);
 
-  // Diagonal perspective offsets matching Reference 1 & 2
+  // Diagonal perspective offsets for white studio runway
   const getCorridorOffset = (slotIndex: number) => {
     const xOffsets = [0, 85, 160, 230, 295, 355];
     const yOffsets = [0, -12, -22, -30, -38, -44];
@@ -134,14 +133,10 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     <section
       id="home"
       ref={containerRef}
-      className="relative min-h-screen bg-[#050505] text-white pt-24 pb-8 overflow-hidden flex flex-col justify-between select-none"
+      className="relative min-h-screen bg-[#FFFFFF] text-[#111111] pt-28 pb-8 overflow-hidden flex flex-col justify-between select-none"
     >
-      {/* Background Atmospheric Curved Wave Light (Reference 1 & 2) */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[16%] left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.07)_0%,_rgba(0,0,0,0)_70%)] blur-[100px]" />
-        {/* Subtle curved arc lighting sweep */}
-        <div className="absolute top-[26%] left-1/2 -translate-x-1/2 w-[1050px] h-[360px] border-t border-white/[0.09] rounded-[50%] blur-[1px]" />
-      </div>
+      {/* Background Soft Studio Pedestal Illumination */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_75%_55%_at_50%_36%,rgba(0,0,0,0.02)_0%,rgba(255,255,255,1)_100%)]" />
 
       {/* Main Runway Stage Container */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-8 w-full relative z-10 flex-1 flex flex-col justify-between">
@@ -151,24 +146,29 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
           
           {/* Left Column: Brand Headline & Description (Image 3) */}
           <div className="lg:col-span-4 z-20 space-y-5 text-left pt-2 sm:pt-0">
-            <div className="inline-block text-[11px] font-mono tracking-[0.3em] uppercase text-[#A1A1A6]">
-              SEE MORE. LIVE MORE.
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[10px] font-mono tracking-[0.35em] text-[#888888] uppercase">
+                — OPTICALS —
+              </span>
+              <div className="inline-block text-[11px] font-mono tracking-[0.25em] uppercase text-[#111111] font-bold">
+                SEE MORE. LIVE MORE.
+              </div>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white leading-[1.04]">
+            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-[#111111] leading-[1.04]">
               PREMIUM <br />
               EYEWEAR <br />
-              <span className="font-light text-[#D8DEE8]">COLLECTIONS</span>
+              <span className="font-light text-[#777777]">COLLECTIONS</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-[#A1A1A6] font-light max-w-sm leading-relaxed">
+            <p className="text-sm sm:text-base text-[#555555] font-normal max-w-sm leading-relaxed">
               Discover a world of style, precision and clarity at EYERIS. Branded frames paired with hospital-calibrated clinical lenses.
             </p>
 
             <div className="pt-2">
               <a
                 href="#collections"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 bg-white/5 hover:bg-white hover:text-black text-white text-xs font-mono tracking-wider font-semibold transition-all duration-300 transform hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-[#111111] bg-white hover:bg-[#111111] hover:text-white text-[#111111] text-xs font-mono tracking-wider font-semibold transition-all duration-300 shadow-sm transform hover:-translate-y-0.5"
               >
                 <span>EXPLORE COLLECTION</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -176,11 +176,11 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
             </div>
           </div>
 
-          {/* Center Column: 6-Product Perspective Depth Corridor (Reference 1 & 2) */}
+          {/* Center Column: 6-Product Perspective Depth Corridor (Diagonal & Non-Overlapping) */}
           <div className="lg:col-span-5 relative h-[360px] sm:h-[440px] flex items-center justify-center perspective-[1200px]">
             
-            {/* Mirrored Floor Reflection Base */}
-            <div className="absolute bottom-2 inset-x-0 h-28 bg-gradient-to-t from-[#050505] via-[#050505]/70 to-transparent pointer-events-none z-10" />
+            {/* Soft Studio Floor Reflection Base */}
+            <div className="absolute bottom-2 inset-x-0 h-24 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
 
             {/* Depth Slots Loop (Render from slot 5 down to 0) */}
             {[5, 4, 3, 2, 1, 0].map((slotNumber) => {
@@ -196,7 +196,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                     scale: slotConfig.scale,
                     z: slotConfig.z,
                     opacity: slotConfig.opacity,
-                    filter: `blur(${slotConfig.blur}) brightness(${slotConfig.brightness})`,
+                    filter: `blur(${slotConfig.blur})`,
                   }}
                   transition={{
                     duration: 0.65,
@@ -216,21 +216,21 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                     <img
                       src={product.image}
                       alt={`${product.brand} ${product.modelName}`}
-                      className="max-w-full max-h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.95)]"
+                      className="max-w-full max-h-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.12)]"
                       loading={isForeground ? 'eager' : 'lazy'}
                     />
 
                     {/* Specular Light Sweep Animation on Foreground Frame */}
                     {isForeground && lightSweepActive && (
                       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <div className="w-[140%] h-full bg-gradient-to-r from-transparent via-white/25 to-transparent animate-light-sweep" />
+                        <div className="w-[140%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-light-sweep" />
                       </div>
                     )}
 
                     {/* Contact Ground Shadow */}
                     <div
-                      className="absolute -bottom-4 w-3/4 h-6 rounded-full bg-black/90 blur-md pointer-events-none"
-                      style={{ opacity: slotConfig.opacity * 0.95 }}
+                      className="absolute -bottom-4 w-3/4 h-6 contact-shadow pointer-events-none"
+                      style={{ opacity: slotConfig.opacity * 0.75 }}
                     />
                   </div>
                 </motion.div>
@@ -238,7 +238,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
             })}
           </div>
 
-          {/* Right Column: Stacked White Luxury Cards Rail (Reference 1 & 2) */}
+          {/* Right Column: Stacked White Luxury Cards Rail (Minimal Apple Style) */}
           <div className="lg:col-span-3 z-20 flex flex-col gap-3 max-w-xs ml-auto w-full">
             {RUNWAY_PRODUCTS.slice(0, 3).map((item, idx) => {
               const isWishlisted = !!wishlistMap[item.id];
@@ -250,13 +250,13 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                   onClick={() => selectSlot(idx)}
                   className={`p-3.5 rounded-2xl border transition-all duration-300 cursor-pointer ${
                     isCurrent
-                      ? 'bg-white text-black border-white shadow-luxury-md'
-                      : 'bg-white/95 text-black border-transparent hover:bg-white hover:scale-[1.02]'
+                      ? 'bg-white text-[#111111] border-[#111111] shadow-md'
+                      : 'bg-[#F7F7F7] text-[#111111] border-[#E5E5E5] hover:bg-white hover:border-[#CCCCCC]'
                   }`}
                 >
                   {/* Card Header: Brand Wordmark & Wishlist Heart */}
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-mono font-bold tracking-wider uppercase text-black">
+                    <span className="text-xs font-mono font-bold tracking-wider uppercase text-[#111111]">
                       {item.brandLogoText}
                     </span>
                     <button
@@ -264,7 +264,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                         e.stopPropagation();
                         toggleWishlist(item);
                       }}
-                      className="p-1 rounded-full text-neutral-400 hover:text-red-500 transition-colors"
+                      className="p-1 rounded-full text-[#888888] hover:text-red-500 transition-colors"
                       aria-label="Save to Wishlist"
                     >
                       <Heart
@@ -274,7 +274,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                   </div>
 
                   {/* Frame Image Thumbnail */}
-                  <div className="relative w-full h-20 rounded-xl overflow-hidden bg-neutral-100 mb-2 flex items-center justify-center p-2">
+                  <div className="relative w-full h-20 rounded-xl overflow-hidden bg-white border border-[#E5E5E5] mb-2 flex items-center justify-center p-2">
                     <img
                       src={item.image}
                       alt={item.modelName}
@@ -284,16 +284,16 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
 
                   {/* Model & Spec Label */}
                   <div className="mb-2">
-                    <h4 className="text-xs font-bold text-black truncate leading-tight">
+                    <h4 className="text-xs font-bold text-[#111111] truncate leading-tight">
                       {item.modelName}
                     </h4>
-                    <p className="text-[10px] font-mono text-neutral-500 mt-0.5 truncate">
-                      {item.shape} | {item.colour}
+                    <p className="text-[10px] font-mono text-[#666666] mt-0.5 truncate">
+                      {item.shape} • {item.colour}
                     </p>
                   </div>
 
                   {/* Bottom Action Links */}
-                  <div className="pt-2 border-t border-neutral-200 flex items-center justify-between text-[10px] font-mono font-semibold">
+                  <div className="pt-2 border-t border-[#E5E5E5] flex items-center justify-between text-[10px] font-mono font-semibold">
                     <span
                       onClick={(e) => {
                         e.stopPropagation();
@@ -312,7 +312,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                           });
                         }
                       }}
-                      className="text-neutral-700 hover:text-black hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-[#666666] hover:text-[#111111] hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       View Details →
                     </span>
@@ -324,7 +324,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="p-1.5 rounded-full bg-neutral-100 hover:bg-neutral-200 text-black transition-colors"
+                      className="p-1.5 rounded-full bg-[#EAEAEA] hover:bg-[#111111] hover:text-white text-[#111111] transition-colors"
                       aria-label="Enquire on WhatsApp"
                     >
                       <MessageCircle className="w-3.5 h-3.5 fill-current" />
@@ -337,8 +337,8 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
 
         </div>
 
-        {/* Dedicated Non-Overlapping Specs HUD Strip (Reference 2) */}
-        <div className="w-full mt-6 pt-5 border-t border-white/10 z-20">
+        {/* Dedicated Non-Overlapping Specs HUD Strip (Clean & Spacious) */}
+        <div className="w-full mt-6 pt-5 border-t border-[#E5E5E5] z-20">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentProduct.id}
@@ -350,28 +350,28 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
             >
               {/* Left: Brand & Model Typography */}
               <div className="flex items-center gap-3">
-                <span className="text-sm sm:text-base font-bold font-mono tracking-wider text-white">
+                <span className="text-sm sm:text-base font-bold font-mono tracking-wider text-[#111111]">
                   {currentProduct.brand}
                 </span>
-                <span className="h-3.5 w-[1px] bg-white/20" />
-                <span className="text-xs sm:text-sm font-mono tracking-widest text-[#A1A1A6] uppercase">
+                <span className="h-3.5 w-[1px] bg-[#CCCCCC]" />
+                <span className="text-xs sm:text-sm font-mono tracking-widest text-[#666666] uppercase font-semibold">
                   {currentProduct.modelName}
                 </span>
               </div>
 
-              {/* Center: Specs Badges (Reference 2) */}
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-mono text-[#A1A1A6]">
+              {/* Center: Specs Badges */}
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-mono text-[#555555]">
                 <div className="flex items-center gap-2">
-                  <Eye className="w-3.5 h-3.5 text-white" />
-                  <span>Shape: <strong className="text-white">{currentProduct.shape}</strong></span>
+                  <Eye className="w-3.5 h-3.5 text-[#111111]" />
+                  <span>Shape: <strong className="text-[#111111]">{currentProduct.shape}</strong></span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Layers className="w-3.5 h-3.5 text-white" />
-                  <span>Material: <strong className="text-white">{currentProduct.material}</strong></span>
+                  <Layers className="w-3.5 h-3.5 text-[#111111]" />
+                  <span>Material: <strong className="text-[#111111]">{currentProduct.material}</strong></span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-white" />
-                  <span>Colour: <strong className="text-white">{currentProduct.colour}</strong></span>
+                  <span className="w-2 h-2 rounded-full bg-[#111111]" />
+                  <span>Colour: <strong className="text-[#111111]">{currentProduct.colour}</strong></span>
                 </div>
               </div>
 
@@ -394,7 +394,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                       });
                     }
                   }}
-                  className="px-5 py-2 rounded-full bg-white text-black hover:bg-neutral-200 font-mono text-xs font-semibold tracking-wider transition shadow-sm"
+                  className="px-5 py-2.5 rounded-full bg-[#111111] text-white hover:bg-black font-mono text-xs font-semibold tracking-wider transition shadow-sm"
                 >
                   VIEW DETAILS →
                 </button>
@@ -405,7 +405,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/25 hover:bg-white/10 text-white font-mono text-xs tracking-wider transition"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-[#E5E5E5] hover:bg-[#F7F7F7] text-[#111111] font-mono text-xs tracking-wider font-semibold transition"
                 >
                   <MessageCircle className="w-3.5 h-3.5 fill-current" />
                   <span>ENQUIRE NOW</span>
@@ -415,12 +415,12 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
           </AnimatePresence>
         </div>
 
-        {/* Collection Selector & Bottom Trust Strip (Reference 1 & 2) */}
-        <div className="mt-6 pt-5 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 z-20">
+        {/* Collection Selector & Bottom Trust Strip */}
+        <div className="mt-6 pt-5 border-t border-[#E5E5E5] flex flex-col md:flex-row items-center justify-between gap-6 z-20">
           
           {/* Left: Collection Numbers (01, 02, 03, 04, 05, 06) */}
           <div className="flex items-center gap-4 sm:gap-6">
-            <span className="text-[10px] font-mono tracking-[0.2em] text-[#707070] uppercase font-bold">
+            <span className="text-[10px] font-mono tracking-[0.2em] text-[#888888] uppercase font-bold">
               COLLECTION
             </span>
 
@@ -431,39 +431,39 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                   onClick={() => selectSlot(idx)}
                   className={`transition-all py-1 px-1 relative ${
                     currentIndex === idx
-                      ? 'text-white font-bold text-sm'
-                      : 'text-[#707070] hover:text-white'
+                      ? 'text-[#111111] font-bold text-sm'
+                      : 'text-[#888888] hover:text-[#111111]'
                   }`}
                 >
                   <span>{String(idx + 1).padStart(2, '0')}</span>
                   {currentIndex === idx && (
                     <motion.div
                       layoutId="activeCollectionUnderline"
-                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-white rounded-full"
+                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#111111] rounded-full"
                     />
                   )}
                 </button>
               ))}
             </div>
 
-            <div className="hidden sm:flex items-center gap-2 pl-4 border-l border-white/15 text-xs font-mono">
-              <span className="text-white font-semibold">{currentProduct.collectionName}</span>
-              <span className="text-[#707070]">•</span>
-              <a href="#collections" className="text-[#A1A1A6] hover:text-white hover:underline">
+            <div className="hidden sm:flex items-center gap-2 pl-4 border-l border-[#E5E5E5] text-xs font-mono">
+              <span className="text-[#111111] font-semibold">{currentProduct.collectionName}</span>
+              <span className="text-[#CCCCCC]">•</span>
+              <a href="#collections" className="text-[#666666] hover:text-[#111111] hover:underline">
                 Explore Collection →
               </a>
             </div>
           </div>
 
           {/* Right: Quick Directions / Visit Store */}
-          <div className="flex items-center gap-4 text-xs font-mono text-[#A1A1A6]">
+          <div className="flex items-center gap-4 text-xs font-mono text-[#666666]">
             <a
               href={EYERIS_LOCATION_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white flex items-center gap-1.5 transition-colors"
+              className="hover:text-[#111111] flex items-center gap-1.5 transition-colors font-medium"
             >
-              <MapPin className="w-3.5 h-3.5 text-white" />
+              <MapPin className="w-3.5 h-3.5 text-[#111111]" />
               <span>Visit EYERIS Store → KPHB Road No. 1</span>
             </a>
           </div>
@@ -473,18 +473,18 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
       </div>
 
       {/* Bottom Trust Strip */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 w-full mt-6 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-4 text-[11px] font-mono text-[#707070] z-20">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 w-full mt-6 pt-4 border-t border-[#E5E5E5] flex flex-wrap items-center justify-between gap-4 text-[11px] font-mono text-[#777777] z-20">
         <div className="flex flex-wrap items-center gap-6">
-          <span className="flex items-center gap-2 text-[#A1A1A6]">
-            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+          <span className="flex items-center gap-2 text-[#333333]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
             Trusted for 2+ Decades
           </span>
-          <span className="flex items-center gap-2 text-[#A1A1A6]">
-            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+          <span className="flex items-center gap-2 text-[#333333]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
             40 Years of Optical Expertise
           </span>
-          <span className="flex items-center gap-2 text-[#A1A1A6]">
-            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+          <span className="flex items-center gap-2 text-[#333333]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
             In Association with Global Eye Hospital
           </span>
         </div>

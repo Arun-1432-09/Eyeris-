@@ -36,26 +36,26 @@ export const OurStoryTimeline: React.FC = () => {
   ];
 
   return (
-    <section id="our-story" className="py-24 sm:py-36 bg-[#050505] text-white border-b border-[#292929] relative overflow-hidden">
+    <section id="our-story" className="py-24 sm:py-36 bg-[#F7F7F7] text-[#111111] border-b border-[#E5E5E5] relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-8">
         
         {/* Section Header */}
         <ScrollReveal variant="fadeUp" className="text-center max-w-2xl mx-auto mb-16 sm:mb-20">
-          <div className="text-[11px] font-mono tracking-[0.3em] uppercase text-[#707070] mb-3">
+          <div className="text-[11px] font-mono tracking-[0.3em] uppercase text-[#888888] mb-3">
             HERITAGE &amp; PROVENANCE
           </div>
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#111111] leading-tight">
             FOUR DECADES. <br />
             TWO GENERATIONS. <br />
-            <span className="font-light text-[#A1A1A6]">ONE VISION.</span>
+            <span className="font-light text-[#666666]">ONE VISION.</span>
           </h2>
-          <p className="text-sm text-[#A1A1A6] font-light mt-4">
+          <p className="text-sm text-[#666666] font-light mt-4">
             A family-run optical practice built on decades of trust, not corporate franchising.
           </p>
         </ScrollReveal>
 
         {/* Timeline Line & Milestones */}
-        <div className="relative border-l border-[#292929] ml-4 sm:ml-32 space-y-12 sm:space-y-16">
+        <div className="relative border-l border-[#E5E5E5] ml-4 sm:ml-32 space-y-12 sm:space-y-16">
           {milestones.map((m, idx) => (
             <ScrollReveal
               key={idx}
@@ -64,25 +64,25 @@ export const OurStoryTimeline: React.FC = () => {
               className="relative pl-6 sm:pl-10"
             >
               {/* Timeline Indicator Dot */}
-              <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-white ring-4 ring-[#050505]" />
+              <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#111111] ring-4 ring-[#F7F7F7]" />
 
               {/* Mobile Tag / Era */}
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#D4AF37]">
+                <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#D4AF37] font-semibold">
                   {m.era}
                 </span>
-                <span className="text-[10px] font-mono uppercase bg-[#171717] border border-[#292929] text-[#A1A1A6] px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-mono uppercase bg-white border border-[#E5E5E5] text-[#666666] px-2 py-0.5 rounded-full shadow-xs">
                   {m.tag}
                 </span>
               </div>
 
               {/* Heading */}
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+              <h3 className="text-xl sm:text-2xl font-bold text-[#111111] mb-2">
                 {m.heading}
               </h3>
 
               {/* Description */}
-              <p className="text-xs sm:text-sm text-[#A1A1A6] font-light leading-relaxed max-w-xl">
+              <p className="text-xs sm:text-sm text-[#666666] font-light leading-relaxed max-w-xl">
                 {m.description}
               </p>
             </ScrollReveal>

@@ -27,9 +27,9 @@ const EyewearCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <section className="relative min-h-[500px] bg-[#050505] text-white py-16 flex items-center justify-center border-b border-[#292929]">
-        <div className="flex flex-col items-center gap-3 text-[#A1A1A6]">
-          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+      <section className="relative min-h-[500px] bg-white text-[#111111] py-16 flex items-center justify-center border-b border-[#E5E5E5]">
+        <div className="flex flex-col items-center gap-3 text-[#666666]">
+          <div className="w-8 h-8 border-2 border-[#111111] border-t-transparent rounded-full animate-spin" />
           <span className="text-xs font-mono tracking-wider">Loading Three.js Ophthalmic Studio...</span>
         </div>
       </section>
@@ -59,7 +59,7 @@ export default function Home() {
       {/* Luxury Cinematic Preloader */}
       <CinematicPreloader />
 
-      <main className="min-h-screen bg-[#050505] text-white flex flex-col relative selection:bg-white selection:text-black">
+      <main className="min-h-screen bg-white text-[#111111] flex flex-col relative selection:bg-[#111111] selection:text-white">
         
         {/* Top Floating Luxury Navbar */}
         <Navbar
