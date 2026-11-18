@@ -45,6 +45,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
   ];
 
   const services = [
+    'Runway Lookbook 2026 Private Fitting',
     'Lens Consultation (Progressive / Digital / DriveSafe)',
     'Curated Designer Frame Selection (Ray-Ban / Oakley / Prada)',
     '₹20,000 Corporate Vision Insurance Claim & Styling',
@@ -101,13 +102,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl overflow-y-auto">
-      <div className="bg-obsidian apple-glass-elevated rounded-3xl max-w-lg w-full p-6 sm:p-8 relative shadow-2xl my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md overflow-y-auto">
+      <div className="bg-white border border-neutral-200 rounded-3xl max-w-lg w-full p-6 sm:p-8 relative shadow-apple-xl my-8">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full apple-glass text-apple-subtext hover:text-white transition"
+          className="absolute top-5 right-5 p-2 rounded-full border border-neutral-200 text-apple-subtext hover:text-black hover:bg-neutral-100 transition"
+          aria-label="Close"
         >
           <X className="w-4 h-4" />
         </button>
@@ -115,12 +117,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
         {!isSubmitted ? (
           <div>
             {/* Modal Header */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full apple-glass text-apple-blue-light text-xs font-mono uppercase tracking-wider mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-apple-blue-light" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-black text-xs font-mono uppercase tracking-wider mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-black" />
               <span>DIRECT STORE APPOINTMENT • NO WAITING</span>
             </div>
 
-            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+            <h3 className="text-2xl sm:text-3xl font-bold text-black mb-1">
               Reserve Your VIP Visit
             </h3>
             <p className="text-xs text-apple-subtext mb-6">
@@ -128,7 +130,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
             </p>
 
             {conflictError && (
-              <div className="p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
+              <div className="p-3 mb-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{conflictError}</span>
               </div>
@@ -138,7 +140,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
               {/* Full Name */}
               <div>
                 <label className="block text-xs font-mono text-apple-subtext mb-1 flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-apple-blue-light" />
+                  <User className="w-3.5 h-3.5 text-black" />
                   <span>FULL NAME:</span>
                 </label>
                 <input
@@ -147,14 +149,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
                   placeholder="e.g. Rahul Varma"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-surface border border-apple-border text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-apple-blue"
+                  className="w-full px-4 py-3 rounded-xl bg-[#FBFBFD] border border-neutral-300 text-black placeholder-neutral-400 text-sm focus:outline-none focus:border-black"
                 />
               </div>
 
               {/* Mobile Phone */}
               <div>
                 <label className="block text-xs font-mono text-apple-subtext mb-1 flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-apple-blue-light" />
+                  <Phone className="w-3.5 h-3.5 text-black" />
                   <span>WHATSAPP MOBILE NUMBER:</span>
                 </label>
                 <input
@@ -163,23 +165,23 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
                   placeholder="e.g. 9876543210"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-surface border border-apple-border text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-apple-blue"
+                  className="w-full px-4 py-3 rounded-xl bg-[#FBFBFD] border border-neutral-300 text-black placeholder-neutral-400 text-sm focus:outline-none focus:border-black"
                 />
               </div>
 
               {/* Select Service */}
               <div>
                 <label className="block text-xs font-mono text-apple-subtext mb-1 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-apple-blue-light" />
+                  <Sparkles className="w-3.5 h-3.5 text-black" />
                   <span>CONSULTATION SERVICE:</span>
                 </label>
                 <select
                   value={formData.visitReason}
                   onChange={(e) => setFormData({ ...formData, visitReason: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-surface border border-apple-border text-white text-sm focus:outline-none focus:border-apple-blue"
+                  className="w-full px-4 py-3 rounded-xl bg-[#FBFBFD] border border-neutral-300 text-black text-sm focus:outline-none focus:border-black"
                 >
                   {services.map((s, idx) => (
-                    <option key={idx} value={s} className="bg-obsidian text-white">
+                    <option key={idx} value={s} className="bg-white text-black">
                       {s}
                     </option>
                   ))}
@@ -190,7 +192,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-mono text-apple-subtext mb-1 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-apple-blue-light" />
+                    <Calendar className="w-3.5 h-3.5 text-black" />
                     <span>DATE:</span>
                   </label>
                   <input
@@ -198,22 +200,22 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
                     required
                     value={formData.preferredDate}
                     onChange={(e) => setFormData({ ...formData, preferredDate: e.target.value })}
-                    className="w-full px-3 py-3 rounded-xl bg-surface border border-apple-border text-white text-xs focus:outline-none focus:border-apple-blue"
+                    className="w-full px-3 py-3 rounded-xl bg-[#FBFBFD] border border-neutral-300 text-black text-xs focus:outline-none focus:border-black"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-mono text-apple-subtext mb-1 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-apple-blue-light" />
+                    <Clock className="w-3.5 h-3.5 text-black" />
                     <span>TIME SLOT:</span>
                   </label>
                   <select
                     value={formData.preferredTime}
                     onChange={(e) => setFormData({ ...formData, preferredTime: e.target.value })}
-                    className="w-full px-3 py-3 rounded-xl bg-surface border border-apple-border text-white text-xs focus:outline-none focus:border-apple-blue"
+                    className="w-full px-3 py-3 rounded-xl bg-[#FBFBFD] border border-neutral-300 text-black text-xs focus:outline-none focus:border-black"
                   >
                     {timeSlots.map((ts, idx) => (
-                      <option key={idx} value={ts} className="bg-obsidian text-white">
+                      <option key={idx} value={ts} className="bg-white text-black">
                         {ts}
                       </option>
                     ))}
@@ -224,7 +226,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
               {/* Company / IT Allowance */}
               <div>
                 <label className="block text-xs font-mono text-apple-subtext mb-1 flex items-center gap-1.5">
-                  <Briefcase className="w-3.5 h-3.5 text-apple-blue-light" />
+                  <Briefcase className="w-3.5 h-3.5 text-black" />
                   <span>COMPANY (OPTIONAL FOR ₹20,000 CLAIM GST INVOICE):</span>
                 </label>
                 <input
@@ -232,14 +234,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
                   placeholder="e.g. TCS / Infosys / Microsoft / Amazon / Deloitte"
                   value={formData.companyName}
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-surface border border-apple-border text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-apple-blue"
+                  className="w-full px-4 py-3 rounded-xl bg-[#FBFBFD] border border-neutral-300 text-black placeholder-neutral-400 text-sm focus:outline-none focus:border-black"
                 />
               </div>
 
               {/* Submit CTA */}
               <button
                 type="submit"
-                className="w-full py-4 mt-2 rounded-xl bg-apple-blue hover:bg-apple-blue-hover text-white font-semibold text-xs font-mono tracking-wider flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5 shadow-lg shadow-apple-blue/20"
+                className="w-full py-4 mt-2 rounded-full bg-black hover:bg-neutral-800 text-white font-medium text-xs font-mono tracking-wider flex items-center justify-center gap-2 transition-all shadow-apple-sm active:scale-95"
               >
                 <span>CONFIRM APPOINTMENT &amp; GET VIP PASS</span>
                 <ArrowRight className="w-4 h-4" />
@@ -249,37 +251,37 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
         ) : (
           /* CONFIRMED VIP PASS SCREEN */
           <div className="space-y-6 text-center py-2">
-            <div className="w-14 h-14 rounded-full bg-apple-blue/20 border border-apple-blue text-apple-blue-light flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-8 h-8 text-apple-blue-light" />
+            <div className="w-14 h-14 rounded-full bg-neutral-100 border border-neutral-300 text-black flex items-center justify-center mx-auto shadow-sm">
+              <CheckCircle2 className="w-8 h-8 text-black" />
             </div>
 
             <div>
-              <span className="text-xs font-mono text-apple-blue-light">BOOKING CONFIRMED</span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-white mt-1">
+              <span className="text-xs font-mono text-emerald-600 font-bold uppercase tracking-wider">Booking Confirmed</span>
+              <h3 className="text-2xl sm:text-3xl font-bold text-black mt-1">
                 Your EYERIS VIP Pass
               </h3>
               <p className="text-xs text-apple-subtext mt-1">
-                Reference ID: <span className="font-mono text-white font-bold">{bookingId}</span>
+                Reference ID: <span className="font-mono text-black font-bold">{bookingId}</span>
               </p>
             </div>
 
             {/* Pass Card */}
-            <div className="p-5 rounded-2xl apple-glass text-left space-y-3">
-              <div className="flex justify-between border-b border-white/10 pb-2 text-xs">
+            <div className="p-5 rounded-2xl bg-[#FBFBFD] border border-neutral-200 text-left space-y-3">
+              <div className="flex justify-between border-b border-neutral-200 pb-2 text-xs">
                 <span className="text-apple-subtext">Guest:</span>
-                <span className="text-white font-medium">{formData.fullName}</span>
+                <span className="text-black font-semibold">{formData.fullName}</span>
               </div>
-              <div className="flex justify-between border-b border-white/10 pb-2 text-xs">
+              <div className="flex justify-between border-b border-neutral-200 pb-2 text-xs">
                 <span className="text-apple-subtext">Service:</span>
-                <span className="text-apple-blue-light font-medium">{formData.visitReason}</span>
+                <span className="text-black font-medium">{formData.visitReason}</span>
               </div>
-              <div className="flex justify-between border-b border-white/10 pb-2 text-xs">
+              <div className="flex justify-between border-b border-neutral-200 pb-2 text-xs">
                 <span className="text-apple-subtext">Date &amp; Time:</span>
-                <span className="text-white font-mono font-medium">{formData.preferredDate} • {formData.preferredTime}</span>
+                <span className="text-black font-mono font-medium">{formData.preferredDate} • {formData.preferredTime}</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-apple-subtext">Location:</span>
-                <span className="text-white">KPHB Road No. 1 (Global Eye Hospital ground floor)</span>
+                <span className="text-black">KPHB Road No. 1 (Global Eye Hospital ground floor)</span>
               </div>
             </div>
 
@@ -289,7 +291,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3.5 rounded-xl bg-apple-green hover:opacity-90 text-black font-bold text-xs font-mono tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg"
+                className="w-full py-3.5 rounded-full bg-black hover:bg-neutral-800 text-white font-medium text-xs font-mono tracking-wider flex items-center justify-center gap-2 transition-all shadow-apple-sm"
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>CONFIRM ON WHATSAPP CONCIERGE</span>
@@ -299,9 +301,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ini
                 href={EYERIS_LOCATION_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3 rounded-xl apple-glass hover:bg-white/10 text-white font-mono text-xs tracking-wider flex items-center justify-center gap-2 transition-all"
+                className="w-full py-3 rounded-full border border-neutral-300 bg-white hover:bg-neutral-50 text-black font-mono text-xs tracking-wider flex items-center justify-center gap-2 transition-all"
               >
-                <MapPin className="w-4 h-4 text-apple-blue-light" />
+                <MapPin className="w-4 h-4 text-black" />
                 <span>GET GOOGLE MAPS DIRECTIONS</span>
               </a>
             </div>

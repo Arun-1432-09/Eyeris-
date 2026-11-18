@@ -7,6 +7,7 @@ import { SmoothScrollProvider } from '@/components/animations/SmoothScrollProvid
 import { Navbar } from '@/components/navigation/Navbar';
 import { CinematicHero } from '@/components/hero/CinematicHero';
 import { BrandMarquee } from '@/components/brands/BrandMarquee';
+import { RunwayLookbookCarousel } from '@/components/collections/RunwayLookbookCarousel';
 import { TrendingFramesShowcase } from '@/components/frames/TrendingFramesShowcase';
 import { CorporateCalculator } from '@/components/calculator/CorporateCalculator';
 import { ReelsSection } from '@/components/reels/ReelsSection';
@@ -22,9 +23,9 @@ const EyewearCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <section className="relative min-h-[500px] bg-background text-white py-16 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-brand-300">
-          <div className="w-8 h-8 border-2 border-brand-400 border-t-transparent rounded-full animate-spin" />
+      <section className="relative min-h-[500px] bg-[#FBFBFD] text-black py-16 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-neutral-500">
+          <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
           <span className="text-xs font-mono tracking-wider">Loading 3D Interactive Anatomy Studio...</span>
         </div>
       </section>
@@ -56,33 +57,36 @@ export default function Home() {
       {/* Luxury Cinematic Opening Preloader Animation */}
       <CinematicPreloader />
 
-      <main className="min-h-screen bg-background text-neutral-100 flex flex-col relative selection:bg-brand-400 selection:text-black">
+      <main className="min-h-screen bg-white text-black flex flex-col relative selection:bg-black selection:text-white">
         
         {/* Sticky Top Navigation */}
         <Navbar onOpenBooking={handleOpenBooking} onOpenLensFinder={handleOpenLensFinder} />
 
-        {/* Section 01: Cinematic Hero (Clean, Bold, Animated) */}
+        {/* Section 01: Cinematic Hero (Clean Apple Light Theme) */}
         <CinematicHero onOpenBooking={handleOpenBooking} onOpenLensFinder={handleOpenLensFinder} />
 
         {/* Brand Marquee Ticker */}
         <BrandMarquee />
 
-        {/* Section 02: 3D Interactive Anatomy of Vision Experience */}
+        {/* Section 02: Runway Lookbook Carousel (Couture Architecture & Haute Vision) */}
+        <RunwayLookbookCarousel onOpenBooking={handleOpenBooking} />
+
+        {/* Section 03: 3D Interactive Anatomy of Vision & Real-Life Lens Physics */}
         <EyewearCanvas onOpenBooking={handleOpenBooking} />
 
-        {/* Section 03: Trending Frames & Spectacles (Ray-Ban, Oakley, Prada, Stepper, Tommy Hilfiger, CK) */}
+        {/* Section 04: Trending Frames & Curated Vault */}
         <TrendingFramesShowcase onOpenBooking={handleOpenBooking} />
 
-        {/* Section 04: Corporate Optical Benefit Calculator (₹20,000 Allowance Maximizer) */}
+        {/* Section 05: Corporate Optical Benefit Calculator (₹20,000 Allowance Maximizer) */}
         <CorporateCalculator onOpenBookingWithPackage={handleOpenBookingWithPackage} />
 
-        {/* Section 05: Connected Care Advantage (Global Eye Hospital Corridor + 40-Year Trust) */}
+        {/* Section 06: Connected Care Advantage (Global Eye Hospital Corridor + 40-Year Trust) */}
         <ConnectedCare onOpenBooking={handleOpenBooking} />
 
-        {/* Section 06: Eyeris Lens Lab & Reels Hub (Doctor Talks & Styling) */}
+        {/* Section 07: Eyeris Lens Lab & Reels Hub (Doctor Talks & Styling) */}
         <ReelsSection onOpenBooking={handleOpenBooking} />
 
-        {/* Section 07: Comprehensive Store Footer & Map */}
+        {/* Section 08: Comprehensive Store Footer & Map */}
         <Footer onOpenBooking={handleOpenBooking} />
 
         {/* Interactive Slot Booking Modal */}

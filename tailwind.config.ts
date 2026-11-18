@@ -9,49 +9,42 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Apple Space Black Canvas & Elevated Tiers
-        background: "#000000",
-        obsidian: "#08080A",
+        // Apple Pure Light Canvas & Monochrome Studio Palette
+        background: "#FFFFFF",
         surface: {
-          DEFAULT: "#121214",
-          raised: "#18181B",
-          elevated: "#222226",
-          border: "rgba(255, 255, 255, 0.08)",
-          hover: "#2A2A2E",
+          DEFAULT: "#FBFBFD",
+          raised: "#F5F5F7",
+          elevated: "#FFFFFF",
+          border: "#E5E5EA",
+          hover: "#EAEAEF",
         },
-        // Apple Typography Neutrals
+        // Apple Typography & Monochrome Neutrals
         apple: {
-          text: "#F5F5F7",
-          subtext: "#86868B",
-          tertiary: "#6E6E73",
-          card: "rgba(255, 255, 255, 0.03)",
-          border: "rgba(255, 255, 255, 0.08)",
-          blue: "#0071E3",
-          "blue-hover": "#0077ED",
-          "blue-light": "#2997FF",
-          titanium: "#E5E5EA",
-          green: "#30D158",
-          gold: "#E5C384",
+          text: "#1D1D1F",
+          subtext: "#6E6E73",
+          tertiary: "#86868B",
+          black: "#000000",
+          white: "#FFFFFF",
+          card: "#FFFFFF",
+          border: "#E5E5EA",
+          titanium: "#86868B",
+          gray: "#F5F5F7",
+          "gray-dark": "#1D1D1F",
+          "gray-hover": "#2C2C2E",
+          emerald: "#1B4332",
         },
-        // Brand & Precision Accents
+        // Brand tokens redefined as Pure Monochrome (Zero Blue Tints)
         brand: {
-          50: "#f0fdf9",
-          100: "#ccfbee",
-          200: "#99f6dd",
-          300: "#5eead4",
-          400: "#2997FF", // Apple precision optic blue
-          500: "#0071E3", // Apple flagship interactive blue
-          600: "#0062C4",
-          700: "#004EA2",
-          800: "#003B7B",
-          900: "#002855",
-        },
-        optic: {
-          blue: "#2997FF",
-          cyan: "#64D2FF",
-          green: "#30D158",
-          purple: "#BF5AF2",
-          sun: "#FF9F0A",
+          50: "#FFFFFF",
+          100: "#F5F5F7",
+          200: "#E5E5EA",
+          300: "#D2D2D7",
+          400: "#86868B",
+          500: "#1D1D1F",
+          600: "#000000",
+          700: "#000000",
+          800: "#000000",
+          900: "#000000",
         },
       },
       fontFamily: {
@@ -83,6 +76,12 @@ const config: Config = {
       animation: {
         "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "spin-slow": "spin 12s linear infinite",
+      },
+      boxShadow: {
+        "apple-sm": "0 2px 8px rgba(0, 0, 0, 0.04)",
+        "apple-md": "0 4px 16px rgba(0, 0, 0, 0.06)",
+        "apple-lg": "0 12px 32px rgba(0, 0, 0, 0.08)",
+        "apple-xl": "0 20px 48px rgba(0, 0, 0, 0.12)",
       },
     },
   },

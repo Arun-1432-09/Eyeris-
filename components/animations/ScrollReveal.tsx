@@ -3,9 +3,12 @@
 import React from 'react';
 import { motion, HTMLMotionProps } from 'framer-motion';
 
+export type ScrollRevealVariant = 'fadeUp' | 'fadeIn' | 'scaleIn' | 'slideRight' | 'slideLeft';
+
 interface ScrollRevealProps extends HTMLMotionProps<'div'> {
   children: React.ReactNode;
-  variant?: 'fadeUp' | 'fadeIn' | 'scaleIn' | 'slideRight' | 'slideLeft';
+  variant?: ScrollRevealVariant;
+  animation?: 'fade-up' | 'fade-in' | 'scale-in' | 'slide-right' | 'slide-left' | ScrollRevealVariant;
   delay?: number;
   duration?: number;
   className?: string;
@@ -36,13 +39,30 @@ const variantsMap = {
 
 export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   children,
-  variant = 'fadeUp',
+  variant,
+  animation,
   delay = 0,
   duration = 0.65,
   className = '',
   ...props
 }) => {
-  const selectedVariant = variantsMap[variant];
+  // Normalize animation or variant
+  let resolvedKey: ScrollRevealVariant = 'fadeUp';
+  const raw = variant || animation;
+
+  if (raw === 'scale-in' || raw === 'scaleIn') {
+    resolvedKey = 'scaleIn';
+  } else if (raw === 'fade-in' || raw === 'fadeIn') {
+    resolvedKey = 'fadeIn';
+  } else if (raw === 'slide-right' || raw === 'slideRight') {
+    resolvedKey = 'slideRight';
+  } else if (raw === 'slide-left' || raw === 'slideLeft') {
+    resolvedKey = 'slideLeft';
+  } else {
+    resolvedKey = 'fadeUp';
+  }
+
+  const selectedVariant = variantsMap[resolvedKey];
 
   return (
     <motion.div

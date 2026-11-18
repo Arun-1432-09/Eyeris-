@@ -94,7 +94,6 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
   };
 
   const handleFinish = () => {
-    // Save to local storage for Admin Dashboard CRM
     try {
       const stored = JSON.parse(localStorage.getItem('eyeris_lens_finder_leads') || '[]');
       const newLead = {
@@ -114,19 +113,20 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
   const recommendedLenses = getRecommendation();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md">
-      <div className="relative w-full max-w-2xl bg-surface border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-md">
+      <div className="relative w-full max-w-2xl bg-white border border-neutral-200 rounded-3xl p-6 sm:p-8 shadow-apple-xl overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Top Header & Progress */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
+        <div className="flex items-center justify-between pb-4 border-b border-neutral-200 shrink-0">
           <div className="flex items-center gap-2">
-            <Eye className="w-5 h-5 text-brand-400" />
-            <span className="font-serif font-bold text-lg text-white">EYERIS Precision Lens Finder</span>
+            <Eye className="w-5 h-5 text-black" />
+            <span className="font-bold text-lg text-black">EYERIS Precision Lens Finder</span>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/10 text-neutral-400 hover:text-white transition"
+            className="p-2 rounded-full hover:bg-neutral-100 text-apple-subtext hover:text-black transition"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -134,9 +134,9 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
 
         {/* Progress Bar */}
         {step <= 4 && (
-          <div className="w-full bg-white/5 h-1.5 rounded-full my-4 overflow-hidden shrink-0">
+          <div className="w-full bg-neutral-100 h-1.5 rounded-full my-4 overflow-hidden shrink-0">
             <div
-              className="bg-brand-400 h-full transition-all duration-300"
+              className="bg-black h-full transition-all duration-300"
               style={{ width: `${(step / 4) * 100}%` }}
             />
           </div>
@@ -149,11 +149,11 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
           {step === 1 && (
             <div className="space-y-6">
               <div>
-                <span className="text-xs font-mono text-champagne-400">QUESTION 1 OF 4</span>
-                <h3 className="text-2xl font-serif font-bold text-white mt-1">
+                <span className="text-xs font-mono text-apple-subtext uppercase">Question 1 of 4</span>
+                <h3 className="text-2xl font-bold text-black mt-1">
                   How many hours do you spend on screens daily?
                 </h3>
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-apple-subtext mt-1">
                   Including laptops, dual monitors, tablets, and mobile phones.
                 </p>
               </div>
@@ -168,14 +168,14 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
                   <button
                     key={option}
                     onClick={() => setAnswers({ ...answers, screenHours: option })}
-                    className={`w-full p-4 rounded-xl text-left border text-sm font-sans flex items-center justify-between transition-all ${
+                    className={`w-full p-4 rounded-2xl text-left border text-sm flex items-center justify-between transition-all ${
                       answers.screenHours === option
-                        ? 'bg-brand-500/20 border-brand-400 text-white font-medium'
-                        : 'bg-graphite/60 border-white/5 text-neutral-300 hover:bg-graphite hover:text-white'
+                        ? 'bg-black text-white border-black font-medium shadow-apple-sm'
+                        : 'bg-[#FBFBFD] border-neutral-200 text-apple-text hover:border-neutral-400'
                     }`}
                   >
                     <span>{option}</span>
-                    {answers.screenHours === option && <Check className="w-4 h-4 text-brand-400" />}
+                    {answers.screenHours === option && <Check className="w-4 h-4 text-white" />}
                   </button>
                 ))}
               </div>
@@ -186,11 +186,11 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
           {step === 2 && (
             <div className="space-y-6">
               <div>
-                <span className="text-xs font-mono text-champagne-400">QUESTION 2 OF 4</span>
-                <h3 className="text-2xl font-serif font-bold text-white mt-1">
+                <span className="text-xs font-mono text-apple-subtext uppercase">Question 2 of 4</span>
+                <h3 className="text-2xl font-bold text-black mt-1">
                   Do you experience glare while driving or commuting at night?
                 </h3>
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-apple-subtext mt-1">
                   High-beam LEDs, rainy road reflections, or halo rings around street lights.
                 </p>
               </div>
@@ -205,14 +205,14 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
                   <button
                     key={option}
                     onClick={() => setAnswers({ ...answers, driving: option })}
-                    className={`w-full p-4 rounded-xl text-left border text-sm font-sans flex items-center justify-between transition-all ${
+                    className={`w-full p-4 rounded-2xl text-left border text-sm flex items-center justify-between transition-all ${
                       answers.driving === option
-                        ? 'bg-brand-500/20 border-brand-400 text-white font-medium'
-                        : 'bg-graphite/60 border-white/5 text-neutral-300 hover:bg-graphite hover:text-white'
+                        ? 'bg-black text-white border-black font-medium shadow-apple-sm'
+                        : 'bg-[#FBFBFD] border-neutral-200 text-apple-text hover:border-neutral-400'
                     }`}
                   >
                     <span>{option}</span>
-                    {answers.driving === option && <Check className="w-4 h-4 text-brand-400" />}
+                    {answers.driving === option && <Check className="w-4 h-4 text-white" />}
                   </button>
                 ))}
               </div>
@@ -223,11 +223,11 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
           {step === 3 && (
             <div className="space-y-6">
               <div>
-                <span className="text-xs font-mono text-champagne-400">QUESTION 3 OF 4</span>
-                <h3 className="text-2xl font-serif font-bold text-white mt-1">
+                <span className="text-xs font-mono text-apple-subtext uppercase">Question 3 of 4</span>
+                <h3 className="text-2xl font-bold text-black mt-1">
                   What is your age category?
                 </h3>
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-apple-subtext mt-1">
                   Determines whether accommodative support or freeform progressive corridors are optimal.
                 </p>
               </div>
@@ -242,14 +242,14 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
                   <button
                     key={option}
                     onClick={() => setAnswers({ ...answers, ageGroup: option })}
-                    className={`w-full p-4 rounded-xl text-left border text-sm font-sans flex items-center justify-between transition-all ${
+                    className={`w-full p-4 rounded-2xl text-left border text-sm flex items-center justify-between transition-all ${
                       answers.ageGroup === option
-                        ? 'bg-brand-500/20 border-brand-400 text-white font-medium'
-                        : 'bg-graphite/60 border-white/5 text-neutral-300 hover:bg-graphite hover:text-white'
+                        ? 'bg-black text-white border-black font-medium shadow-apple-sm'
+                        : 'bg-[#FBFBFD] border-neutral-200 text-apple-text hover:border-neutral-400'
                     }`}
                   >
                     <span>{option}</span>
-                    {answers.ageGroup === option && <Check className="w-4 h-4 text-brand-400" />}
+                    {answers.ageGroup === option && <Check className="w-4 h-4 text-white" />}
                   </button>
                 ))}
               </div>
@@ -260,8 +260,8 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
           {step === 4 && (
             <div className="space-y-6">
               <div>
-                <span className="text-xs font-mono text-champagne-400">QUESTION 4 OF 4</span>
-                <h3 className="text-2xl font-serif font-bold text-white mt-1">
+                <span className="text-xs font-mono text-apple-subtext uppercase">Question 4 of 4</span>
+                <h3 className="text-2xl font-bold text-black mt-1">
                   Outdoor UV exposure & Corporate allowance goal?
                 </h3>
               </div>
@@ -276,14 +276,14 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
                   <button
                     key={option}
                     onClick={() => setAnswers({ ...answers, budgetGoal: option })}
-                    className={`w-full p-4 rounded-xl text-left border text-sm font-sans flex items-center justify-between transition-all ${
+                    className={`w-full p-4 rounded-2xl text-left border text-sm flex items-center justify-between transition-all ${
                       answers.budgetGoal === option
-                        ? 'bg-brand-500/20 border-brand-400 text-white font-medium'
-                        : 'bg-graphite/60 border-white/5 text-neutral-300 hover:bg-graphite hover:text-white'
+                        ? 'bg-black text-white border-black font-medium shadow-apple-sm'
+                        : 'bg-[#FBFBFD] border-neutral-200 text-apple-text hover:border-neutral-400'
                     }`}
                   >
                     <span>{option}</span>
-                    {answers.budgetGoal === option && <Check className="w-4 h-4 text-brand-400" />}
+                    {answers.budgetGoal === option && <Check className="w-4 h-4 text-white" />}
                   </button>
                 ))}
               </div>
@@ -294,14 +294,14 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
           {step === 5 && (
             <div className="space-y-6">
               <div className="text-center max-w-md mx-auto">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-mono mb-2">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 text-black text-xs font-mono mb-2">
+                  <Sparkles className="w-3.5 h-3.5 text-black" />
                   <span>ANALYSIS COMPLETE</span>
                 </div>
-                <h3 className="text-3xl font-serif font-bold text-white">
+                <h3 className="text-3xl font-bold text-black">
                   Your Bespoke Optical Profile
                 </h3>
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-apple-subtext mt-1">
                   Based on your screen duration ({answers.screenHours.split(' ')[0]}) and lifestyle requirements.
                 </p>
               </div>
@@ -309,22 +309,22 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
               {/* Recommended Lenses Cards */}
               <div className="space-y-4">
                 {recommendedLenses.map((rec, i) => (
-                  <div key={i} className="p-4 sm:p-5 rounded-2xl bg-graphite/80 border border-brand-400/30 space-y-2">
+                  <div key={i} className="p-5 rounded-2xl bg-[#FBFBFD] border border-neutral-200 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-mono text-brand-300 px-2.5 py-0.5 rounded bg-brand-500/10">
+                      <span className="text-[11px] font-mono text-black font-semibold px-2.5 py-0.5 rounded bg-neutral-200/70">
                         {rec.badge}
                       </span>
-                      <span className="text-[11px] font-mono text-champagne-400">{rec.category}</span>
+                      <span className="text-[11px] font-mono text-apple-subtext">{rec.category}</span>
                     </div>
-                    <h4 className="text-lg font-serif font-bold text-white">{rec.title}</h4>
-                    <p className="text-xs text-neutral-300 leading-relaxed">{rec.why}</p>
+                    <h4 className="text-lg font-bold text-black">{rec.title}</h4>
+                    <p className="text-xs text-apple-subtext leading-relaxed">{rec.why}</p>
                   </div>
                 ))}
               </div>
 
               {/* Verified Medical Disclaimer */}
-              <div className="p-3.5 rounded-xl bg-surface-raised border border-white/10 flex items-start gap-2.5 text-xs text-neutral-400">
-                <ShieldAlert className="w-4 h-4 text-champagne-400 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200 flex items-start gap-2.5 text-xs text-apple-subtext">
+                <ShieldAlert className="w-4 h-4 text-black shrink-0 mt-0.5" />
                 <span>
                   <strong>Clinical Notice:</strong> This interactive questionnaire provides educational recommendations only and does not constitute a clinical medical prescription. Final lens power and corridor calibration will be precisely verified by our optometrists at KPHB Road No. 1 or Global Eye Hospital.
                 </span>
@@ -337,7 +337,7 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
                     onClose();
                     onOpenBooking();
                   }}
-                  className="flex-1 py-3.5 rounded-xl bg-champagne-500 hover:bg-champagne-400 text-slate-950 font-bold text-xs font-mono tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg"
+                  className="flex-1 py-3.5 rounded-full bg-black hover:bg-neutral-800 text-white font-medium text-xs font-mono tracking-wider flex items-center justify-center gap-2 transition-all shadow-apple-sm"
                 >
                   <Calendar className="w-4 h-4" />
                   <span>SCHEDULE IN-STORE TRY-ON</span>
@@ -349,7 +349,7 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs font-mono tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg"
+                  className="flex-1 py-3.5 rounded-full border border-neutral-300 bg-white hover:bg-neutral-50 text-black font-medium text-xs font-mono tracking-wider flex items-center justify-center gap-2 transition-all"
                 >
                   <span>SHARE ON WHATSAPP</span>
                   <ArrowRight className="w-4 h-4" />
@@ -362,11 +362,11 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
 
         {/* Modal Footer Controls */}
         {step <= 4 && (
-          <div className="pt-4 border-t border-white/10 flex items-center justify-between shrink-0">
+          <div className="pt-4 border-t border-neutral-200 flex items-center justify-between shrink-0">
             {step > 1 ? (
               <button
                 onClick={() => setStep(step - 1)}
-                className="flex items-center gap-2 text-xs font-mono text-neutral-400 hover:text-white"
+                className="flex items-center gap-2 text-xs font-mono text-apple-subtext hover:text-black"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>PREVIOUS</span>
@@ -380,7 +380,7 @@ export const LensFinderModal: React.FC<LensFinderModalProps> = ({ isOpen, onClos
                 if (step < 4) setStep(step + 1);
                 else handleFinish();
               }}
-              className="px-6 py-3 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs font-mono tracking-wider flex items-center gap-2 transition-all"
+              className="px-6 py-3 rounded-full bg-black hover:bg-neutral-800 text-white font-medium text-xs font-mono tracking-wider flex items-center gap-2 transition-all shadow-apple-sm"
             >
               <span>{step === 4 ? 'GENERATE RECOMMENDATIONS' : 'NEXT STEP'}</span>
               <ArrowRight className="w-4 h-4" />
