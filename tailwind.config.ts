@@ -9,42 +9,35 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Apple Pure Light Canvas & Monochrome Studio Palette
-        background: "#FFFFFF",
+        // Master Prompt Section 3 Tokens: Black Luxury
+        bg: {
+          DEFAULT: "#050505",
+          2: "#101010",
+          elevated: "#171717",
+        },
+        background: "#050505",
         surface: {
-          DEFAULT: "#FBFBFD",
-          raised: "#F5F5F7",
-          elevated: "#FFFFFF",
-          border: "#E5E5EA",
-          hover: "#EAEAEF",
+          DEFAULT: "#101010",
+          raised: "#171717",
+          elevated: "#1E1E1E",
+          border: "#292929",
         },
-        // Apple Typography & Monochrome Neutrals
-        apple: {
-          text: "#1D1D1F",
-          subtext: "#6E6E73",
-          tertiary: "#86868B",
-          black: "#000000",
-          white: "#FFFFFF",
-          card: "#FFFFFF",
-          border: "#E5E5EA",
-          titanium: "#86868B",
-          gray: "#F5F5F7",
-          "gray-dark": "#1D1D1F",
-          "gray-hover": "#2C2C2E",
-          emerald: "#1B4332",
+        text: {
+          DEFAULT: "#FFFFFF",
+          2: "#A1A1A6",
+          muted: "#707070",
         },
-        // Brand tokens redefined as Pure Monochrome (Zero Blue Tints)
-        brand: {
-          50: "#FFFFFF",
-          100: "#F5F5F7",
-          200: "#E5E5EA",
-          300: "#D2D2D7",
-          400: "#86868B",
-          500: "#1D1D1F",
-          600: "#000000",
-          700: "#000000",
-          800: "#000000",
-          900: "#000000",
+        border: {
+          DEFAULT: "#292929",
+          subtle: "#1C1C1C",
+        },
+        accent: {
+          DEFAULT: "#D8DEE8",
+          hover: "#FFFFFF",
+        },
+        gold: {
+          DEFAULT: "#D4AF37",
+          subtle: "#AA8C2C",
         },
       },
       fontFamily: {
@@ -53,8 +46,8 @@ const config: Config = {
           "BlinkMacSystemFont",
           '"SF Pro Display"',
           '"SF Pro Text"',
+          '"Inter"',
           '"Helvetica Neue"',
-          "Inter",
           "sans-serif",
         ],
         serif: [
@@ -71,17 +64,18 @@ const config: Config = {
         ],
       },
       transitionTimingFunction: {
-        apple: "cubic-bezier(0.21, 0.47, 0.32, 0.98)",
+        "expo-out": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "power3-in-out": "cubic-bezier(0.77, 0, 0.175, 1)",
       },
       animation: {
         "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "spin-slow": "spin 12s linear infinite",
+        "spin-slow": "spin 20s linear infinite",
       },
       boxShadow: {
-        "apple-sm": "0 2px 8px rgba(0, 0, 0, 0.04)",
-        "apple-md": "0 4px 16px rgba(0, 0, 0, 0.06)",
-        "apple-lg": "0 12px 32px rgba(0, 0, 0, 0.08)",
-        "apple-xl": "0 20px 48px rgba(0, 0, 0, 0.12)",
+        "luxury-sm": "0 2px 12px rgba(0, 0, 0, 0.6)",
+        "luxury-md": "0 8px 30px rgba(0, 0, 0, 0.8)",
+        "luxury-lg": "0 20px 60px rgba(0, 0, 0, 0.95)",
+        "glow-accent": "0 0 40px rgba(216, 222, 232, 0.08)",
       },
     },
   },
