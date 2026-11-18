@@ -2,25 +2,39 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { Layers, ShieldCheck, Sparkles, RotateCw, Eye, Check, ChevronRight } from 'lucide-react';
+import { Layers, ShieldCheck, Sparkles, RotateCw, Sun, Moon, Zap, Eye, Check, Sliders } from 'lucide-react';
 import { ScrollReveal } from '@/components/animations/ScrollReveal';
 
 interface EyewearCanvasProps {
   onOpenBooking: () => void;
 }
 
-type ViewPreset = 'assembled' | 'exploded' | 'lens' | 'temples';
+type ViewPreset = 'assembled' | 'exploded' | 'sunlight' | 'drivesafe';
+type TransitionsTint = 'emerald' | 'graphite' | 'sapphire';
 
 export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const [explosionProgress, setExplosionProgress] = useState<number>(0.2);
+  
+  // Interactive Simulator State
+  const [explosionProgress, setExplosionProgress] = useState<number>(0);
   const [activePreset, setActivePreset] = useState<ViewPreset>('assembled');
+  const [sunlightUV, setSunlightUV] = useState<number>(0); // 0% (Indoors) to 100% (Direct UV Sun)
+  const [activeTint, setActiveTint] = useState<TransitionsTint>('emerald');
+  const [isBlueCutActive, setIsBlueCutActive] = useState<boolean>(true);
+  const [isNightDriveActive, setIsNightDriveActive] = useState<boolean>(false);
   const [isAutoRotating, setIsAutoRotating] = useState<boolean>(true);
 
   // References for Three.js state
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const materialsRef = useRef<{
+    lensGlass?: THREE.MeshPhysicalMaterial;
+    coatingShield?: THREE.MeshPhysicalMaterial;
+    blueLightBeams?: THREE.Group;
+    headlightGlare?: THREE.Group;
+  }>({});
+
   const partsRef = useRef<{
     leftLens?: THREE.Mesh;
     rightLens?: THREE.Mesh;
@@ -29,12 +43,9 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     leftRim?: THREE.Mesh;
     rightRim?: THREE.Mesh;
     bridge?: THREE.Mesh;
-    leftNosePad?: THREE.Mesh;
-    rightNosePad?: THREE.Mesh;
     leftTemple?: THREE.Group;
     rightTemple?: THREE.Group;
     rootGroup?: THREE.Group;
-    lightBeams?: THREE.Group;
   }>({});
 
   const targetCameraPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0.3, 5.8));
@@ -51,11 +62,11 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     sceneRef.current = scene;
 
     // 2. Camera
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
     camera.position.copy(targetCameraPos.current);
     cameraRef.current = camera;
 
-    // 3. Renderer with high-end tone mapping & antialias
+    // 3. Renderer with high-performance ACES tone mapping
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -64,84 +75,86 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
+    renderer.toneMappingExposure = 1.3;
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // 4. Studio Lighting Rig
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     scene.add(ambientLight);
 
-    // Key Light (Eyeris Teal Rim)
-    const keyLight = new THREE.DirectionalLight(0x00c49f, 3.2);
-    keyLight.position.set(5, 6, 6);
+    // Key Light (Precision Optical Highlight)
+    const keyLight = new THREE.DirectionalLight(0xffffff, 3.0);
+    keyLight.position.set(5, 7, 6);
     scene.add(keyLight);
 
-    // Warm Accent Light (Champagne Gold highlight)
-    const goldLight = new THREE.DirectionalLight(0xd4af37, 2.4);
-    goldLight.position.set(-6, 4, 4);
-    scene.add(goldLight);
+    // Apple Precision Blue Accent Rim
+    const blueRimLight = new THREE.DirectionalLight(0x0071e3, 2.5);
+    blueRimLight.position.set(-6, 3, 4);
+    scene.add(blueRimLight);
 
-    // Top Specular Light
-    const topLight = new THREE.DirectionalLight(0xffffff, 2.2);
-    topLight.position.set(0, 9, 3);
-    scene.add(topLight);
+    // Warm Sun Simulator Light (activated by UV slider)
+    const sunLight = new THREE.DirectionalLight(0xffaa33, 0.0);
+    sunLight.position.set(2, 8, 3);
+    scene.add(sunLight);
 
-    // Back Rim (Optic Blue silhouette)
-    const backLight = new THREE.DirectionalLight(0x38bdf8, 2.5);
+    // Back Silhouette Light
+    const backLight = new THREE.DirectionalLight(0x86868b, 2.0);
     backLight.position.set(0, -4, -6);
     scene.add(backLight);
 
     // 5. Materials
-    // Matte Midnight Titanium Frame
+    // Natural Brushed Aerospace Titanium Frame
     const titaniumMaterial = new THREE.MeshStandardMaterial({
-      color: 0x14171d,
-      metalness: 0.94,
-      roughness: 0.22,
+      color: 0x1c1c1e,
+      metalness: 0.92,
+      roughness: 0.24,
     });
 
-    // 24K Champagne Gold Accents & Hinges
+    // 24K Gold Inlay Hinges
     const goldAccentMaterial = new THREE.MeshStandardMaterial({
-      color: 0xd4af37,
-      metalness: 0.98,
-      roughness: 0.14,
+      color: 0xe5c384,
+      metalness: 0.96,
+      roughness: 0.15,
     });
 
-    // High-Index 1.67 Physical Lens (Glass transmission + chromatic reflection)
+    // High-Index 1.67 Physical Optical Lens (Transmission + Chromatic Reflection)
     const lensGlassMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xf0fdff,
+      color: 0xffffff,
       transmission: 0.96,
-      opacity: 0.92,
+      opacity: 0.95,
       transparent: true,
       roughness: 0.02,
       ior: 1.67,
-      reflectivity: 0.88,
+      reflectivity: 0.85,
       clearcoat: 1.0,
-      clearcoatRoughness: 0.04,
-      emissive: 0x00c49f,
-      emissiveIntensity: 0.08,
+      clearcoatRoughness: 0.03,
+      emissive: 0x0071e3,
+      emissiveIntensity: 0.04,
     });
+    materialsRef.current.lensGlass = lensGlassMaterial;
 
-    // Anti-Reflective Molecular Coating Shield (Semi-transparent iridescent sheen)
+    // Anti-Reflective Molecular Shield (Iridescent green/cyan sheen)
     const coatingMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x00c49f,
-      transmission: 0.88,
-      opacity: 0.65,
+      color: 0x30d158,
+      transmission: 0.90,
+      opacity: 0.45,
       transparent: true,
-      roughness: 0.06,
+      roughness: 0.04,
       clearcoat: 1.0,
-      emissive: 0x38bdf8,
-      emissiveIntensity: 0.2,
+      emissive: 0x64d2ff,
+      emissiveIntensity: 0.15,
     });
+    materialsRef.current.coatingShield = coatingMaterial;
 
     // Medical Silicone Nose Pads
     const siliconeMaterial = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
-      transmission: 0.85,
+      transmission: 0.82,
       opacity: 0.8,
       transparent: true,
-      roughness: 0.35,
+      roughness: 0.3,
     });
 
     // 6. Geometry Creation
@@ -149,14 +162,14 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     scene.add(rootGroup);
     partsRef.current.rootGroup = rootGroup;
 
-    const lensRadiusX = 1.08;
+    const lensRadiusX = 1.1;
     const lensRadiusY = 0.82;
     const eyeCenterDist = 1.38;
 
-    // Helper: Oval Lens
+    // Helper: Oval Aspheric Lens
     function createLensMesh(xOffset: number): THREE.Mesh {
       const shape = new THREE.Shape();
-      const segments = 56;
+      const segments = 64;
       for (let i = 0; i <= segments; i++) {
         const theta = (i / segments) * Math.PI * 2;
         const x = Math.cos(theta) * lensRadiusX;
@@ -183,8 +196,8 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
       const segments = 48;
       for (let i = 0; i <= segments; i++) {
         const theta = (i / segments) * Math.PI * 2;
-        const x = Math.cos(theta) * (lensRadiusX - 0.04);
-        const y = Math.sin(theta) * (lensRadiusY - 0.04);
+        const x = Math.cos(theta) * (lensRadiusX - 0.03);
+        const y = Math.sin(theta) * (lensRadiusY - 0.03);
         if (i === 0) shape.moveTo(x, y);
         else shape.lineTo(x, y);
       }
@@ -194,11 +207,11 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
       return mesh;
     }
 
-    // Helper: Rim Frame
+    // Helper: Titanium Rim Frame
     function createRimMesh(xOffset: number): THREE.Mesh {
       const outerShape = new THREE.Shape();
       const rimWidth = 0.08;
-      const segments = 56;
+      const segments = 64;
 
       for (let i = 0; i <= segments; i++) {
         const theta = (i / segments) * Math.PI * 2;
@@ -221,9 +234,9 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
       const geo = new THREE.ExtrudeGeometry(outerShape, {
         depth: 0.12,
         bevelEnabled: true,
-        bevelThickness: 0.02,
+        bevelThickness: 0.025,
         bevelSize: 0.02,
-        bevelSegments: 3,
+        bevelSegments: 4,
       });
       geo.center();
       const mesh = new THREE.Mesh(geo, titaniumMaterial);
@@ -247,7 +260,7 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     partsRef.current.leftLens = leftLens;
     partsRef.current.rightLens = rightLens;
 
-    // Add Anti-Reflective Coating Layers
+    // Add AR Coating Layers
     const leftCoating = createCoatingMesh(-eyeCenterDist);
     const rightCoating = createCoatingMesh(eyeCenterDist);
     rootGroup.add(leftCoating);
@@ -255,7 +268,7 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     partsRef.current.leftCoating = leftCoating;
     partsRef.current.rightCoating = rightCoating;
 
-    // Bridge Arch
+    // Nose Bridge Arch
     const bridgeCurve = new THREE.CubicBezierCurve3(
       new THREE.Vector3(-eyeCenterDist + lensRadiusX - 0.02, 0.12, 0),
       new THREE.Vector3(-0.3, 0.46, 0.08),
@@ -277,10 +290,8 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     rightPad.rotation.z = 0.3;
     rootGroup.add(leftPad);
     rootGroup.add(rightPad);
-    partsRef.current.leftNosePad = leftPad;
-    partsRef.current.rightNosePad = rightPad;
 
-    // Temples (Sub-10g Ergonomic Beta-Titanium Arms)
+    // Temples (Sub-10g Beta-Titanium Arms)
     function createTempleGroup(isLeft: boolean): THREE.Group {
       const group = new THREE.Group();
       const mult = isLeft ? -1 : 1;
@@ -293,7 +304,7 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
       hinge.rotation.z = Math.PI / 2;
       group.add(hinge);
 
-      // Ergonomic Curved Arm
+      // Ergonomic Contoured Arm
       const curve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0, 0, 0),
         new THREE.Vector3(mult * 0.05, -0.02, -1.2),
@@ -326,22 +337,22 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
     partsRef.current.leftTemple = leftTemple;
     partsRef.current.rightTemple = rightTemple;
 
-    // Laser Light Beams (Anti-Reflective Dispersion rays)
-    const beams = new THREE.Group();
+    // Blue-Light High-Energy Ray Simulator
+    const blueBeams = new THREE.Group();
     for (let i = -1; i <= 1; i += 2) {
-      const beamGeo = new THREE.CylinderGeometry(0.015, 0.015, 3.2, 8);
+      const beamGeo = new THREE.CylinderGeometry(0.018, 0.018, 3.6, 8);
       const beamMat = new THREE.MeshBasicMaterial({
-        color: 0x38bdf8,
+        color: 0x64d2ff,
         transparent: true,
-        opacity: 0.45,
+        opacity: 0.5,
       });
       const beam = new THREE.Mesh(beamGeo, beamMat);
       beam.rotation.x = Math.PI / 2;
-      beam.position.set(i * eyeCenterDist, 0, 0.8);
-      beams.add(beam);
+      beam.position.set(i * eyeCenterDist, 0, 1.2);
+      blueBeams.add(beam);
     }
-    rootGroup.add(beams);
-    partsRef.current.lightBeams = beams;
+    rootGroup.add(blueBeams);
+    materialsRef.current.blueLightBeams = blueBeams;
 
     // 7. Interactive Drag & Rotate
     let isDragging = false;
@@ -400,8 +411,8 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
         rootGroup.rotation.x += (targetRotation.current.x - rootGroup.rotation.x) * 0.08;
 
         if (isAutoRotating && !isDragging) {
-          rootGroup.rotation.y += delta * 0.2;
-          rootGroup.position.y = Math.sin(elapsed * 1.5) * 0.08;
+          rootGroup.rotation.y += delta * 0.18;
+          rootGroup.position.y = Math.sin(elapsed * 1.5) * 0.07;
         }
       }
 
@@ -432,6 +443,7 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
         rendererRef.current = null;
       }
       partsRef.current = {};
+      materialsRef.current = {};
       if (container) {
         container.innerHTML = '';
       }
@@ -445,13 +457,11 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
 
     const p = explosionProgress;
 
-    // Lenses fly forward along Z
     parts.leftLens.position.z = p * 1.8;
     parts.rightLens.position.z = p * 1.8;
     parts.leftLens.position.x = -1.38 - p * 0.22;
     parts.rightLens.position.x = 1.38 + p * 0.22;
 
-    // Anti-Reflective Coating floats further in front of lenses
     if (parts.leftCoating && parts.rightCoating) {
       parts.leftCoating.position.z = p * 2.3 + 0.06;
       parts.rightCoating.position.z = p * 2.3 + 0.06;
@@ -459,202 +469,348 @@ export const EyewearCanvas: React.FC<EyewearCanvasProps> = ({ onOpenBooking }) =
       parts.rightCoating.position.x = 1.38 + p * 0.26;
     }
 
-    // Temples slide outward & flex
     parts.leftTemple.position.x = -2.52 - p * 1.2;
     parts.rightTemple.position.x = 2.52 + p * 1.2;
     parts.leftTemple.rotation.y = -p * 0.35;
     parts.rightTemple.rotation.y = p * 0.35;
 
-    // Rims drift slightly forward
     if (parts.leftRim && parts.rightRim) {
       parts.leftRim.position.z = p * 0.45;
       parts.rightRim.position.z = p * 0.45;
     }
-
-    // Light rays expand
-    if (parts.lightBeams && parts.lightBeams.children.length >= 2) {
-      parts.lightBeams.scale.set(1 + p * 0.5, 1 + p * 0.8, 1);
-    }
   }, [explosionProgress]);
 
-  // Handle Preset Views
+  // Synchronize Real-Life Lens Physics (Transitions Sunlight, Blue-Cut & Night Drive)
+  useEffect(() => {
+    const parts = partsRef.current;
+    if (!parts.leftLens || !parts.rightLens) return;
+
+    const leftMat = parts.leftLens.material as THREE.MeshPhysicalMaterial;
+    const rightMat = parts.rightLens.material as THREE.MeshPhysicalMaterial;
+
+    const uv = sunlightUV / 100; // 0 (clear indoors) to 1 (full dark sunglasses)
+
+    // Calculate Dynamic Color Tint based on selected Transitions® hue
+    let tintColorHex = 0xffffff;
+    if (activeTint === 'emerald') {
+      // Transitions® Emerald: fades from crystal clear to lush deep racing green
+      tintColorHex = uv > 0.05 ? 0x0f382a : 0xf0fdff;
+    } else if (activeTint === 'graphite') {
+      // Transitions® Graphite Grey: true neutral dark smoke sunglass tint
+      tintColorHex = uv > 0.05 ? 0x1a1a1c : 0xffffff;
+    } else if (activeTint === 'sapphire') {
+      // Transitions® Sapphire: electric blue sunglass tint
+      tintColorHex = uv > 0.05 ? 0x0f2a4a : 0xf0f7ff;
+    }
+
+    // Adjust Transmission: 0.96 (clear) smoothly drops to 0.20 (sunglasses)
+    const currentTransmission = 0.96 - uv * 0.76;
+    const currentRoughness = 0.02 + uv * 0.04;
+
+    leftMat.color.setHex(tintColorHex);
+    rightMat.color.setHex(tintColorHex);
+    leftMat.transmission = currentTransmission;
+    rightMat.transmission = currentTransmission;
+    leftMat.roughness = currentRoughness;
+    rightMat.roughness = currentRoughness;
+    leftMat.needsUpdate = true;
+    rightMat.needsUpdate = true;
+
+    // Control Blue-Light Ray visibility
+    if (materialsRef.current.blueLightBeams) {
+      materialsRef.current.blueLightBeams.visible = isBlueCutActive;
+    }
+
+    // Control Night Drive Anti-Glare Mode
+    if (isNightDriveActive) {
+      leftMat.emissive.setHex(0x2997ff);
+      leftMat.emissiveIntensity = 0.12;
+      rightMat.emissive.setHex(0x2997ff);
+      rightMat.emissiveIntensity = 0.12;
+    } else {
+      leftMat.emissive.setHex(0x0071e3);
+      leftMat.emissiveIntensity = 0.04;
+      rightMat.emissive.setHex(0x0071e3);
+      rightMat.emissiveIntensity = 0.04;
+    }
+  }, [sunlightUV, activeTint, isBlueCutActive, isNightDriveActive]);
+
+  // Handle Apple-style Presets
   const selectPreset = (preset: ViewPreset) => {
     setActivePreset(preset);
     setIsAutoRotating(false);
 
     if (preset === 'assembled') {
       setExplosionProgress(0);
+      setSunlightUV(0);
+      setIsNightDriveActive(false);
       targetCameraPos.current.set(0, 0.3, 5.8);
       targetRotation.current = { x: 0.08, y: -0.2 };
     } else if (preset === 'exploded') {
       setExplosionProgress(1.0);
       targetCameraPos.current.set(0, 0.4, 6.4);
       targetRotation.current = { x: 0.12, y: -0.35 };
-    } else if (preset === 'lens') {
-      setExplosionProgress(0.75);
-      targetCameraPos.current.set(-1.2, 0.1, 4.0);
-      targetRotation.current = { x: 0.05, y: -0.15 };
-    } else if (preset === 'temples') {
-      setExplosionProgress(0.35);
-      targetCameraPos.current.set(2.4, 0.2, 4.5);
-      targetRotation.current = { x: 0.1, y: 1.1 };
+    } else if (preset === 'sunlight') {
+      setExplosionProgress(0.15);
+      setSunlightUV(85); // Auto-demonstrate sunglass tint
+      setIsNightDriveActive(false);
+      targetCameraPos.current.set(0, 0.2, 5.2);
+      targetRotation.current = { x: 0.05, y: 0.15 };
+    } else if (preset === 'drivesafe') {
+      setExplosionProgress(0.1);
+      setSunlightUV(0);
+      setIsNightDriveActive(true);
+      targetCameraPos.current.set(-1.0, 0.1, 4.6);
+      targetRotation.current = { x: 0.05, y: -0.25 };
     }
   };
 
   return (
-    <section id="anatomy-3d" className="relative py-20 bg-background text-white overflow-hidden border-t border-white/5">
-      {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-brand-500/10 rounded-full blur-[140px] pointer-events-none" />
+    <section id="anatomy-3d" className="relative py-24 bg-black text-apple-text overflow-hidden border-t border-apple-border">
+      {/* Background ambient lighting */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-apple-blue/10 rounded-full blur-[160px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         
-        {/* Header: Short, Clear, Minimal */}
-        <ScrollReveal variant="fadeUp" className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-mono uppercase tracking-wider mb-3">
-            <Layers className="w-3.5 h-3.5 text-brand-400" />
-            <span>Interactive 3D Anatomy</span>
+        {/* Apple Pro Keynote Header: Restrained, Bold, Minimal */}
+        <ScrollReveal variant="fadeUp" className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full apple-glass text-apple-blue-light text-xs font-mono uppercase tracking-wider mb-4">
+            <Zap className="w-3.5 h-3.5 text-apple-blue-light" />
+            <span>Interactive Optical Physics</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-white tracking-tight">
-            The Science Behind{' '}
-            <span className="bg-gradient-to-r from-brand-300 to-optic-blue bg-clip-text text-transparent">
-              Precision Eyewear.
+          <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-white leading-tight">
+            Realistic Optics.{' '}
+            <span className="text-apple-gradient">
+              Living Lenses.
             </span>
           </h2>
-          <p className="text-neutral-400 text-sm sm:text-base mt-2">
-            60–70% of optical performance lives in the lens. Drag to rotate and explore the layers.
+          <p className="text-apple-subtext text-base sm:text-lg mt-3 font-normal max-w-xl mx-auto">
+            Experience real-time Transitions® sunlight darkening, blue-light filtration, and German titanium engineering in motion.
           </p>
         </ScrollReveal>
 
         {/* 3D Viewport Card */}
-        <ScrollReveal variant="scaleIn" className="relative w-full h-[520px] sm:h-[600px] rounded-3xl bg-surface/80 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing">
+        <ScrollReveal variant="scaleIn" className="relative w-full h-[560px] sm:h-[660px] rounded-3xl apple-glass-elevated shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing">
           {/* Canvas Mount */}
           <div ref={mountRef} className="w-full h-full" />
 
-          {/* Preset Buttons HUD */}
+          {/* Top Apple Preset Switcher Bar */}
           <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex flex-wrap gap-2 z-20">
             <button
               onClick={() => selectPreset('assembled')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
                 activePreset === 'assembled'
-                  ? 'bg-brand-400 text-slate-950 font-bold shadow-lg shadow-brand-400/20'
-                  : 'bg-surface-raised/80 text-neutral-300 hover:text-white border border-white/10'
+                  ? 'bg-apple-blue text-white shadow-lg shadow-apple-blue/30'
+                  : 'apple-glass text-apple-subtext hover:text-white'
               }`}
             >
               Assembled Frame
             </button>
             <button
               onClick={() => selectPreset('exploded')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
                 activePreset === 'exploded'
-                  ? 'bg-brand-400 text-slate-950 font-bold shadow-lg shadow-brand-400/20'
-                  : 'bg-surface-raised/80 text-neutral-300 hover:text-white border border-white/10'
+                  ? 'bg-apple-blue text-white shadow-lg shadow-apple-blue/30'
+                  : 'apple-glass text-apple-subtext hover:text-white'
               }`}
             >
               Exploded Anatomy
             </button>
             <button
-              onClick={() => selectPreset('lens')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                activePreset === 'lens'
-                  ? 'bg-brand-400 text-slate-950 font-bold shadow-lg shadow-brand-400/20'
-                  : 'bg-surface-raised/80 text-neutral-300 hover:text-white border border-white/10'
+              onClick={() => selectPreset('sunlight')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
+                activePreset === 'sunlight'
+                  ? 'bg-apple-blue text-white shadow-lg shadow-apple-blue/30'
+                  : 'apple-glass text-apple-subtext hover:text-white'
               }`}
             >
-              Lens Coating Shield
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+              <span>Sunlight &amp; UV Tint</span>
             </button>
             <button
-              onClick={() => selectPreset('temples')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                activePreset === 'temples'
-                  ? 'bg-brand-400 text-slate-950 font-bold shadow-lg shadow-brand-400/20'
-                  : 'bg-surface-raised/80 text-neutral-300 hover:text-white border border-white/10'
+              onClick={() => selectPreset('drivesafe')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
+                activePreset === 'drivesafe'
+                  ? 'bg-apple-blue text-white shadow-lg shadow-apple-blue/30'
+                  : 'apple-glass text-apple-subtext hover:text-white'
               }`}
             >
-              Titanium Flex Arms
+              <Moon className="w-3.5 h-3.5 text-optic-cyan" />
+              <span>Night DriveSafe</span>
             </button>
           </div>
 
-          {/* Quick Rotation / Auto-play Toggle */}
+          {/* Auto-Rotate Toggle */}
           <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20">
             <button
               onClick={() => setIsAutoRotating(!isAutoRotating)}
-              className="px-3 py-1.5 rounded-xl bg-surface-raised/80 border border-white/10 text-neutral-300 hover:text-white text-xs font-mono flex items-center gap-1.5 backdrop-blur-md"
+              className="px-3.5 py-1.5 rounded-full apple-glass text-apple-subtext hover:text-white text-xs font-mono flex items-center gap-1.5"
             >
-              <RotateCw className={`w-3.5 h-3.5 ${isAutoRotating ? 'text-brand-400 animate-spin-slow' : 'text-neutral-500'}`} />
-              <span>{isAutoRotating ? 'Auto-Rotate ON' : 'Paused'}</span>
+              <RotateCw className={`w-3.5 h-3.5 ${isAutoRotating ? 'text-apple-blue-light animate-spin-slow' : 'text-neutral-500'}`} />
+              <span>{isAutoRotating ? 'Auto-Rotate' : 'Paused'}</span>
             </button>
           </div>
 
-          {/* Bottom Slider & Action Bar */}
-          <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-8 sm:right-8 bg-surface-raised/90 border border-white/10 backdrop-blur-xl rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl z-20">
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <span className="text-xs font-mono uppercase text-brand-300 tracking-wider flex items-center gap-1.5 whitespace-nowrap">
-                <Layers className="w-4 h-4 text-brand-400" />
-                <span>Explode: {Math.round(explosionProgress * 100)}%</span>
-              </span>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={explosionProgress}
-                onChange={(e) => {
-                  setExplosionProgress(parseFloat(e.target.value));
-                  setIsAutoRotating(false);
-                }}
-                className="w-full sm:w-56 h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-brand-400"
-              />
+          {/* Real-Life Lens Physics Simulator HUD (Floating Glass Overlay) */}
+          <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-8 sm:right-8 apple-glass-elevated rounded-2xl p-5 shadow-2xl z-20 space-y-4">
+            
+            {/* Row 1: Real-time Sunlight / UV Photochromic Darkening Slider */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-3 border-b border-white/5">
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                <Sun className={`w-4 h-4 ${sunlightUV > 20 ? 'text-amber-400 animate-pulse' : 'text-neutral-400'}`} />
+                <div>
+                  <span className="text-xs font-semibold text-white block">
+                    UV Sunlight Exposure: {sunlightUV}%
+                  </span>
+                  <span className="text-[11px] text-apple-subtext">
+                    {sunlightUV < 15
+                      ? 'Clear Indoor Optics (96% Light Transmission)'
+                      : sunlightUV < 60
+                      ? 'Active Outdoor Tint (Adapting UV Protection)'
+                      : 'Deep Category-3 Sunglasses (100% UV400 Blocked)'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Slider Input */}
+              <div className="flex items-center gap-3 w-full md:w-72">
+                <span className="text-[10px] font-mono text-apple-subtext">INDOOR</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={sunlightUV}
+                  onChange={(e) => {
+                    setSunlightUV(parseInt(e.target.value));
+                    setIsAutoRotating(false);
+                  }}
+                  className="w-full h-1.5 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-apple-blue"
+                />
+                <span className="text-[10px] font-mono text-amber-400 font-bold">BRIGHT SUN</span>
+              </div>
+
+              {/* Transitions® Tint Color Swatches */}
+              <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                <span className="text-[11px] text-apple-subtext mr-1">Transitions® Tint:</span>
+                <button
+                  onClick={() => setActiveTint('emerald')}
+                  title="Transitions Emerald"
+                  className={`w-6 h-6 rounded-full bg-emerald-700 border-2 transition-all ${
+                    activeTint === 'emerald' ? 'border-white scale-110 shadow-md' : 'border-transparent opacity-70'
+                  }`}
+                />
+                <button
+                  onClick={() => setActiveTint('graphite')}
+                  title="Transitions Graphite Grey"
+                  className={`w-6 h-6 rounded-full bg-neutral-800 border-2 transition-all ${
+                    activeTint === 'graphite' ? 'border-white scale-110 shadow-md' : 'border-transparent opacity-70'
+                  }`}
+                />
+                <button
+                  onClick={() => setActiveTint('sapphire')}
+                  title="Transitions Sapphire"
+                  className={`w-6 h-6 rounded-full bg-blue-800 border-2 transition-all ${
+                    activeTint === 'sapphire' ? 'border-white scale-110 shadow-md' : 'border-transparent opacity-70'
+                  }`}
+                />
+              </div>
             </div>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-              <span className="text-[11px] text-neutral-400 hidden md:inline">
-                Drag to rotate 360° • Pinch to inspect
-              </span>
+            {/* Row 2: Secondary Physics Toggles (Blue-Cut, DriveSafe, Explode & Book) */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Explode Slider Pill */}
+                <div className="flex items-center gap-2 apple-glass px-3 py-1.5 rounded-full">
+                  <Layers className="w-3.5 h-3.5 text-apple-blue-light" />
+                  <span className="text-xs text-apple-subtext">Explode:</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={explosionProgress}
+                    onChange={(e) => {
+                      setExplosionProgress(parseFloat(e.target.value));
+                      setIsAutoRotating(false);
+                    }}
+                    className="w-20 h-1 bg-neutral-700 rounded appearance-none cursor-pointer accent-apple-blue"
+                  />
+                  <span className="text-xs font-mono text-white">{Math.round(explosionProgress * 100)}%</span>
+                </div>
+
+                {/* Blue-Light Ray Toggle */}
+                <button
+                  onClick={() => setIsBlueCutActive(!isBlueCutActive)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition flex items-center gap-1.5 ${
+                    isBlueCutActive
+                      ? 'bg-optic-cyan/20 border border-optic-cyan/40 text-optic-cyan'
+                      : 'apple-glass text-apple-subtext'
+                  }`}
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>BlueProtect™ Filter {isBlueCutActive ? 'ON' : 'OFF'}</span>
+                </button>
+
+                {/* ZEISS DriveSafe Night Mode Toggle */}
+                <button
+                  onClick={() => setIsNightDriveActive(!isNightDriveActive)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition flex items-center gap-1.5 ${
+                    isNightDriveActive
+                      ? 'bg-apple-blue/20 border border-apple-blue text-apple-blue-light'
+                      : 'apple-glass text-apple-subtext'
+                  }`}
+                >
+                  <Moon className="w-3.5 h-3.5" />
+                  <span>ZEISS DriveSafe {isNightDriveActive ? 'Active' : 'Off'}</span>
+                </button>
+              </div>
+
+              {/* Book Appointment CTA */}
               <button
                 onClick={onOpenBooking}
-                className="text-xs font-bold text-slate-950 bg-gradient-to-r from-brand-300 to-brand-400 hover:from-brand-200 hover:to-brand-300 px-4 py-2 rounded-xl transition shadow-[0_0_20px_rgba(0,196,159,0.3)] whitespace-nowrap"
+                className="px-5 py-2 rounded-full bg-apple-blue hover:bg-apple-blue-hover text-white font-medium text-xs tracking-wide transition shadow-lg shadow-apple-blue/20 whitespace-nowrap"
               >
-                Book Lens Fitting
+                Schedule In-Store Lens Test
               </button>
             </div>
           </div>
         </ScrollReveal>
 
-        {/* 3 Key Takeaway Stats — Short, Simple & Clear */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
-          <ScrollReveal variant="fadeUp" delay={0.1} className="p-5 rounded-2xl bg-surface/60 border border-white/5 hover:border-brand-500/30 transition-all">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center text-brand-400">
-                <Eye className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-white font-serif">60–70% Lens Specialisation</h3>
-            </div>
-            <p className="text-xs text-neutral-400 leading-relaxed">
-              We calibrate lenses to your exact working posture, screen distance, and prescription power.
+        {/* 3 Apple Precision Optical Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <ScrollReveal variant="fadeUp" delay={0.1} className="p-6 rounded-2xl apple-glass-card">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-apple-blue-light block mb-1">
+              60–70% Optical Revenue
+            </span>
+            <h3 className="text-lg font-bold text-white mb-1.5">
+              Prescription Lens Specialisation
+            </h3>
+            <p className="text-xs text-apple-subtext leading-relaxed">
+              Every lens is surfaced to your exact posture, pupil center, and occupational focal distance.
             </p>
           </ScrollReveal>
 
-          <ScrollReveal variant="fadeUp" delay={0.2} className="p-5 rounded-2xl bg-surface/60 border border-white/5 hover:border-gold-400/30 transition-all">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-gold-400/10 flex items-center justify-center text-gold-400">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-white font-serif">Curated International Brands</h3>
-            </div>
-            <p className="text-xs text-neutral-400 leading-relaxed">
-              Authentic Ray-Ban, Oakley, Prada &amp; Stepper Titanium at practical Hyderabad price points.
+          <ScrollReveal variant="fadeUp" delay={0.2} className="p-6 rounded-2xl apple-glass-card">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-amber-400 block mb-1">
+              Transitions® GEN S™
+            </span>
+            <h3 className="text-lg font-bold text-white mb-1.5">
+              Instant Dynamic UV Adaptation
+            </h3>
+            <p className="text-xs text-apple-subtext leading-relaxed">
+              Crystal clear indoors, darkening to sunglasses in seconds under bright sunlight with 100% UV400 shield.
             </p>
           </ScrollReveal>
 
-          <ScrollReveal variant="fadeUp" delay={0.3} className="p-5 rounded-2xl bg-surface/60 border border-white/5 hover:border-optic-blue/30 transition-all">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-optic-blue/10 flex items-center justify-center text-optic-blue">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-white font-serif">Hospital-Connected Care</h3>
-            </div>
-            <p className="text-xs text-neutral-400 leading-relaxed">
-              Direct ground-floor link to Global Eye Hospital. Transition seamlessly from doctor Rx to custom eyewear.
+          <ScrollReveal variant="fadeUp" delay={0.3} className="p-6 rounded-2xl apple-glass-card">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-apple-green block mb-1">
+              Connected Healthcare
+            </span>
+            <h3 className="text-lg font-bold text-white mb-1.5">
+              Global Eye Hospital Corridor
+            </h3>
+            <p className="text-xs text-apple-subtext leading-relaxed">
+              Ground-floor internal link on KPHB Road No. 1. Direct doctor prescription verification.
             </p>
           </ScrollReveal>
         </div>
