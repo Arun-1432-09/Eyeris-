@@ -213,7 +213,7 @@ export const RUNWAY_PRODUCTS: RunwayProduct[] = [
     shape: 'Rectangle',
     material: 'High-Gloss Cellulosic Acetate',
     colour: 'Polished Black',
-    image: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=1000&q=85',
+    image: '/images/runway/rayban-wayfarer-3d.png',
     description: 'The definitive optical icon. Sculpted acetate with hand-finished beveled rims, signature silver rivets, and ergonomically balanced temple weight.',
     collectionName: 'RAY-BAN COLLECTION',
     verifiedSpecs: {
@@ -233,7 +233,7 @@ export const RUNWAY_PRODUCTS: RunwayProduct[] = [
     shape: 'Round Geometric',
     material: 'Aviation Alloy & O-Matter™',
     colour: 'Polished Gold & Matte Black',
-    image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=1000&q=85',
+    image: '/images/runway/oakley-round-3d.png',
     description: 'Precision engineered for durability and kinetic balance. Three-point fit aligns optics with zero focal drift during movement.',
     collectionName: 'OAKLEY PERFORMANCE',
     verifiedSpecs: {
@@ -253,7 +253,7 @@ export const RUNWAY_PRODUCTS: RunwayProduct[] = [
     shape: 'Square',
     material: 'Ultra-Clear Transparent Acetate',
     colour: 'Crystal Clear',
-    image: 'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&w=1000&q=85',
+    image: '/images/runway/vogue-crystal-3d.png',
     description: 'Understated modern transparency with luminous wire-core reflections. Featherweight comfort for extended digital work sessions.',
     collectionName: 'VOGUE CONTEMPORARY',
     verifiedSpecs: {
@@ -273,7 +273,7 @@ export const RUNWAY_PRODUCTS: RunwayProduct[] = [
     shape: 'Faceted Geometric',
     material: 'Hand-Milled Italian Acetate',
     colour: 'Glossy Obsidian',
-    image: 'https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=1000&q=85',
+    image: '/images/runway/prada-geometric-3d.png',
     description: 'Architectural temple beveling featuring the iconic triangular Milanese profile. High-contrast luxury for executive leadership.',
     collectionName: 'PRADA MILANO VAULT',
     verifiedSpecs: {
@@ -293,7 +293,7 @@ export const RUNWAY_PRODUCTS: RunwayProduct[] = [
     shape: 'Minimalist Rectangle',
     material: 'Laser-Cut Beta-Titanium',
     colour: 'Brushed Gunmetal',
-    image: 'https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&w=1000&q=85',
+    image: '/images/runway/stepper-titanium-3d.png',
     description: 'Sub-8.6 gram featherweight German engineering. 100% hypoallergenic skin contact with zero nickel and zero screw tension points.',
     collectionName: 'STEPPER GERMAN TITANIUM',
     verifiedSpecs: {
@@ -314,7 +314,7 @@ export const RUNWAY_PRODUCTS: RunwayProduct[] = [
     shape: 'Rounded Square',
     material: 'Acetate with Stainless Steel Core',
     colour: 'Havana Tortoise & Navy',
-    image: 'https://images.unsplash.com/photo-1583095117906-8c8d8b9e67c8?auto=format&fit=crop&w=1000&q=85',
+    image: '/images/runway/tommy-tortoise-3d.png',
     description: 'Clean East-Coast heritage styling with subtle red, white, and navy temple tip accents. Engineered for boardroom focus.',
     collectionName: 'TOMMY HILFIGER ARCHIVE',
     verifiedSpecs: {
