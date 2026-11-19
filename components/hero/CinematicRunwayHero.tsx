@@ -44,6 +44,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [autoSlideProgress, setAutoSlideProgress] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [isHeroVisible, setIsHeroVisible] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRailRef = useRef<HTMLDivElement>(null);
@@ -54,6 +55,19 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
 
   const totalProducts = RUNWAY_PRODUCTS.length;
   const currentProduct = RUNWAY_PRODUCTS[currentIndex];
+
+  // Pause auto-slide when the hero section scrolls out of viewport
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsHeroVisible(entry.isIntersecting);
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Sync wishlist from localStorage
   const syncWishlist = () => {
@@ -76,11 +90,13 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     return () => window.removeEventListener('eyeris_wishlist_updated', syncWishlist);
   }, []);
 
-  // Auto-scroll the active card into view in the right rail
+  // Auto-scroll the active card inside the right rail ONLY (eliminates page snap back to top)
   useEffect(() => {
     const activeEl = cardRefs.current[currentIndex];
-    if (activeEl && scrollRailRef.current) {
-      activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const rail = scrollRailRef.current;
+    if (activeEl && rail) {
+      const targetTop = activeEl.offsetTop - rail.offsetTop;
+      rail.scrollTo({ top: Math.max(0, targetTop - 6), behavior: 'smooth' });
     }
   }, [currentIndex]);
 
@@ -128,13 +144,19 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     }, 600);
   };
 
-  // Two-Way Synchronized Wheel & Trackpad Scroll Scrubbing
-  const handleWheelScrub = (e: React.WheelEvent) => {
+  // Localized Two-Way Wheel & Trackpad Scroll Scrubbing (Only active on corridor & carousel rail)
+  const handleZoneWheel = (e: React.WheelEvent) => {
+    // Stop propagation so page does not receive wheel events when scrubbing inside these zones
+    e.stopPropagation();
+
+    // Ignore tiny accidental jitters
+    if (Math.abs(e.deltaY) < 15) return;
+
     const now = Date.now();
     wheelAccumulator.current += e.deltaY;
 
-    // Trigger frame advance when accumulated delta crosses threshold with 280ms cooldown
-    if (Math.abs(wheelAccumulator.current) > 50 && now - lastWheelTime.current > 280) {
+    // Trigger frame advance when accumulated delta crosses threshold with 240ms cooldown
+    if (Math.abs(wheelAccumulator.current) > 40 && now - lastWheelTime.current > 240) {
       if (wheelAccumulator.current > 0) {
         selectSlot((currentIndex + 1) % totalProducts);
       } else {
@@ -145,9 +167,9 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     }
   };
 
-  // 5-Second Gentle Auto-Slide Interval Loop
+  // 5-Second Gentle Auto-Slide Interval Loop (Paused when hero is out of view or hovered)
   useEffect(() => {
-    if (!isAutoPlaying || isHovered) return;
+    if (!isAutoPlaying || isHovered || !isHeroVisible) return;
 
     const intervalStep = 50; // update progress every 50ms
     const totalDuration = 5000; // 5000ms = 5 seconds
@@ -163,7 +185,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     }, intervalStep);
 
     return () => clearInterval(timer);
-  }, [isAutoPlaying, isHovered, currentIndex, isAnimating]);
+  }, [isAutoPlaying, isHovered, isHeroVisible, currentIndex, isAnimating]);
 
   // Touch Swipe Handling for Mobile
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -222,11 +244,8 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     <section
       id="home"
       ref={containerRef}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      onWheel={handleWheelScrub}
       className="relative min-h-screen bg-[#FFFFFF] text-[#111111] pt-28 pb-8 overflow-hidden flex flex-col justify-between select-none"
     >
       {/* Background Soft Studio Pedestal Illumination */}
@@ -271,7 +290,12 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
           </div>
 
           {/* Center Column: 6-Product 3D Perspective Depth Corridor (Matching Reference 1) */}
-          <div className="lg:col-span-5 relative h-[360px] sm:h-[440px] flex items-center justify-center perspective-[1200px]">
+          <div 
+            onWheel={handleZoneWheel}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="lg:col-span-5 relative h-[360px] sm:h-[440px] flex items-center justify-center perspective-[1200px]"
+          >
             
             {/* Top Toolbar: Auto-Slide Timer & Controls */}
             <div className="absolute top-0 right-0 z-30 flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#E5E5E5] shadow-xs">
@@ -418,7 +442,12 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
           </div>
 
           {/* Right Column: Scrollable 6-Card Stream Rail (Reference 1 Style) */}
-          <div className="lg:col-span-3 z-20 flex flex-col max-w-xs ml-auto w-full bg-white/70 backdrop-blur-sm p-3 rounded-3xl border border-[#E5E5E5] shadow-xs">
+          <div 
+            onWheel={handleZoneWheel}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="lg:col-span-3 z-20 flex flex-col max-w-xs ml-auto w-full bg-white/70 backdrop-blur-sm p-3 rounded-3xl border border-[#E5E5E5] shadow-xs"
+          >
             
             {/* Header: Confirmed Brands & Live Counter (Reference 1) */}
             <div className="flex items-center justify-between pb-2.5 border-b border-[#E5E5E5] mb-2 px-1">
@@ -437,7 +466,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
             {/* Scrollable Container for ALL 6 Brands */}
             <div 
               ref={scrollRailRef}
-              className="flex flex-col gap-2.5 max-h-[360px] overflow-y-auto no-scrollbar pr-0.5 scroll-smooth"
+              className="relative flex flex-col gap-2.5 max-h-[360px] overflow-y-auto no-scrollbar pr-0.5 scroll-smooth"
             >
               {RUNWAY_PRODUCTS.map((item, idx) => {
                 const isWishlisted = !!wishlistMap[item.id];
