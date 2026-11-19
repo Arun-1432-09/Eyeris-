@@ -60,6 +60,106 @@ export interface LensExpertiseGroup {
   medicalDisclaimer?: string;
 }
 
+export interface LensShadeProfile {
+  id: string;
+  name: string;
+  shortLabel: string;
+  category: 'Screen & Digital' | 'Polarized Sunglasses' | 'Adaptive Photochromic' | 'DriveSafe Optics' | 'Designer Tint';
+  swatchColor: string;
+  overlayGradient: string;
+  lensTintCss: string;
+  specularReflectance: number;
+  opacity: number;
+  badge: string;
+  uvDefense: string;
+  polarized: boolean;
+  blueCut: boolean;
+  plainDescription: string;
+}
+
+export const LENS_SHADE_PROFILES: LensShadeProfile[] = [
+  {
+    id: 'clear-blueprotect',
+    name: 'Clear BlueProtect™',
+    shortLabel: 'Clear 99% AR',
+    category: 'Screen & Digital',
+    swatchColor: '#EBF4FA',
+    overlayGradient: 'linear-gradient(135deg, rgba(235, 244, 250, 0.15) 0%, rgba(200, 225, 255, 0.28) 100%)',
+    lensTintCss: 'rgba(235, 244, 250, 0.18)',
+    specularReflectance: 0.95,
+    opacity: 0.18,
+    badge: 'HEV 420nm Blue Cut • 99.6% Transmission',
+    uvDefense: 'UV400 Optical Defense',
+    polarized: false,
+    blueCut: true,
+    plainDescription: 'Ultra-clear ophthalmic glass with multi-layer anti-reflective coating and HEV digital screen blue light barrier.',
+  },
+  {
+    id: 'g15-polarized',
+    name: 'Ray-Ban Classic G-15 (Polarized)',
+    shortLabel: 'G-15 Green',
+    category: 'Polarized Sunglasses',
+    swatchColor: '#1A3323',
+    overlayGradient: 'linear-gradient(180deg, rgba(20, 42, 28, 0.88) 0%, rgba(14, 32, 20, 0.80) 100%)',
+    lensTintCss: 'rgba(20, 42, 28, 0.84)',
+    specularReflectance: 0.88,
+    opacity: 0.84,
+    badge: '100% Polarized • Glare Defense Cat 3',
+    uvDefense: 'UV400 100% UVA/UVB',
+    polarized: true,
+    blueCut: false,
+    plainDescription: 'Legendary military-spec dark mineral green tint. Eliminates 99.9% of reflective glare from roads, water, and glass.',
+  },
+  {
+    id: 'transitions-graphite',
+    name: 'Transitions® Gen 8 Graphite Grey',
+    shortLabel: 'Transitions Grey',
+    category: 'Adaptive Photochromic',
+    swatchColor: '#28282C',
+    overlayGradient: 'linear-gradient(180deg, rgba(40, 40, 44, 0.84) 0%, rgba(30, 30, 34, 0.76) 100%)',
+    lensTintCss: 'rgba(40, 40, 44, 0.80)',
+    specularReflectance: 0.85,
+    opacity: 0.80,
+    badge: 'Adaptive Photochromic • Gen 8 Dye',
+    uvDefense: 'UV400 Smart Protection',
+    polarized: false,
+    blueCut: true,
+    plainDescription: 'Rapidly darkens outdoors under direct sunlight UV rays, and clears completely within seconds when returning indoors.',
+  },
+  {
+    id: 'zeiss-drivesafe',
+    name: 'ZEISS DriveSafe Amber Luminance',
+    shortLabel: 'DriveSafe Amber',
+    category: 'DriveSafe Optics',
+    swatchColor: '#614114',
+    overlayGradient: 'linear-gradient(180deg, rgba(97, 65, 20, 0.74) 0%, rgba(70, 45, 10, 0.65) 100%)',
+    lensTintCss: 'rgba(97, 65, 20, 0.70)',
+    specularReflectance: 0.80,
+    opacity: 0.70,
+    badge: 'Anti-Glare High-Beam LED Deflection',
+    uvDefense: 'UV400 Defense',
+    polarized: false,
+    blueCut: true,
+    plainDescription: 'Specially calibrated for night driving and rain. Dramatically dampens glare from oncoming LED/Xenon high-beams.',
+  },
+  {
+    id: 'deep-sapphire-polarized',
+    name: 'Deep Sapphire Ocean Gradient (Polarized)',
+    shortLabel: 'Sapphire Blue',
+    category: 'Designer Tint',
+    swatchColor: '#18375E',
+    overlayGradient: 'linear-gradient(180deg, rgba(18, 48, 88, 0.86) 0%, rgba(28, 75, 130, 0.58) 100%)',
+    lensTintCss: 'rgba(18, 48, 88, 0.78)',
+    specularReflectance: 0.90,
+    opacity: 0.78,
+    badge: '100% Polarized • Hydrophobic Gradient',
+    uvDefense: 'UV400 Defense',
+    polarized: true,
+    blueCut: false,
+    plainDescription: 'Luxury polarized gradient tint. Deep oceanic shielding at the browline transitioning to high clarity at eye level.',
+  },
+];
+
 // 1. Verified Business Facts (Section 1)
 export const BUSINESS_INFO = {
   name: 'Eyeris Opticals',

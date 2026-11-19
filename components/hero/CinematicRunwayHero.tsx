@@ -9,9 +9,20 @@ import {
   Eye, 
   Layers, 
   MapPin,
-  Check
+  Sparkles,
+  Shield,
+  Play,
+  Pause,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
-import { RUNWAY_PRODUCTS, DEPTH_SLOTS, BUSINESS_INFO, ShowcaseProduct } from '@/data/eyerisData';
+import { 
+  RUNWAY_PRODUCTS, 
+  DEPTH_SLOTS, 
+  LENS_SHADE_PROFILES, 
+  LensShadeProfile, 
+  ShowcaseProduct 
+} from '@/data/eyerisData';
 import { createWhatsAppBookingLink, EYERIS_LOCATION_URL } from '@/components/booking/WhatsAppSync';
 
 interface CinematicRunwayHeroProps {
@@ -24,10 +35,18 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
   onOpenProductDetail,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [activeLens, setActiveLens] = useState<LensShadeProfile>(LENS_SHADE_PROFILES[0]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [wishlistMap, setWishlistMap] = useState<Record<string, boolean>>({});
   const [lightSweepActive, setLightSweepActive] = useState(false);
+  
+  // Auto-Slide State
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [autoSlideProgress, setAutoSlideProgress] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const totalProducts = RUNWAY_PRODUCTS.length;
   const currentProduct = RUNWAY_PRODUCTS[currentIndex];
@@ -90,10 +109,51 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     setIsAnimating(true);
     setLightSweepActive(true);
     setCurrentIndex(index);
+    setAutoSlideProgress(0); // Reset timer on manual action
     setTimeout(() => {
       setIsAnimating(false);
       setLightSweepActive(false);
     }, 600);
+  };
+
+  // 5-Second Gentle Auto-Slide Interval Loop
+  useEffect(() => {
+    if (!isAutoPlaying || isHovered) return;
+
+    const intervalStep = 50; // update progress every 50ms
+    const totalDuration = 5000; // 5000ms = 5 seconds
+
+    const timer = setInterval(() => {
+      setAutoSlideProgress((prev) => {
+        if (prev >= 100) {
+          selectSlot((currentIndex + 1) % totalProducts);
+          return 0;
+        }
+        return prev + (intervalStep / totalDuration) * 100;
+      });
+    }, intervalStep);
+
+    return () => clearInterval(timer);
+  }, [isAutoPlaying, isHovered, currentIndex, isAnimating]);
+
+  // Touch Swipe Handling for Mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        // Swiped left -> next
+        selectSlot((currentIndex + 1) % totalProducts);
+      } else {
+        // Swiped right -> prev
+        selectSlot((currentIndex - 1 + totalProducts) % totalProducts);
+      }
+    }
+    touchStartX.current = null;
   };
 
   // Keyboard navigation
@@ -133,6 +193,10 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     <section
       id="home"
       ref={containerRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       className="relative min-h-screen bg-[#FFFFFF] text-[#111111] pt-28 pb-8 overflow-hidden flex flex-col justify-between select-none"
     >
       {/* Background Soft Studio Pedestal Illumination */}
@@ -179,6 +243,44 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
           {/* Center Column: 6-Product Perspective Depth Corridor (Diagonal & Non-Overlapping) */}
           <div className="lg:col-span-5 relative h-[360px] sm:h-[440px] flex items-center justify-center perspective-[1200px]">
             
+            {/* Top Toolbar: Auto-Slide Timer & Controls */}
+            <div className="absolute top-0 right-0 z-30 flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#E5E5E5] shadow-xs">
+              {/* Play/Pause Button */}
+              <button
+                onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+                className="p-1 text-[#666666] hover:text-[#111111] transition"
+                title={isAutoPlaying ? 'Pause Auto-Slide' : 'Start Auto-Slide'}
+              >
+                {isAutoPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+              </button>
+
+              {/* Progress Bar Line */}
+              <div className="w-14 h-1 bg-[#EAEAEA] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#111111] transition-all duration-75"
+                  style={{ width: `${autoSlideProgress}%` }}
+                />
+              </div>
+
+              {/* Navigation Arrows */}
+              <div className="flex items-center gap-1 pl-1 border-l border-[#E5E5E5]">
+                <button
+                  onClick={() => selectSlot((currentIndex - 1 + totalProducts) % totalProducts)}
+                  className="p-0.5 text-[#666666] hover:text-[#111111]"
+                  aria-label="Previous Frame"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => selectSlot((currentIndex + 1) % totalProducts)}
+                  className="p-0.5 text-[#666666] hover:text-[#111111]"
+                  aria-label="Next Frame"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
             {/* Soft Studio Floor Reflection Base */}
             <div className="absolute bottom-2 inset-x-0 h-24 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
 
@@ -213,19 +315,66 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                 >
                   {/* Eyewear Image Stage */}
                   <div className="relative w-[320px] sm:w-[440px] h-[200px] sm:h-[260px] flex items-center justify-center">
+                    
+                    {/* Primary Frame Image */}
                     <img
                       src={product.image}
                       alt={`${product.brand} ${product.modelName}`}
-                      className="max-w-full max-h-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.12)]"
+                      className="max-w-full max-h-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.12)] relative z-10"
                       loading={isForeground ? 'eager' : 'lazy'}
                     />
 
-                    {/* Specular Light Sweep Animation on Foreground Frame */}
-                    {isForeground && lightSweepActive && (
-                      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <div className="w-[140%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-light-sweep" />
+                    {/* DYNAMIC PHOTOREALISTIC LENS OPTICAL TINT LAYER (Lead Frame Only) */}
+                    {isForeground && (
+                      <div
+                        className="absolute inset-0 pointer-events-none z-15 flex items-center justify-center transition-all duration-300"
+                        style={{
+                          mixBlendMode: activeLens.id === 'clear-blueprotect' ? 'screen' : 'multiply',
+                        }}
+                      >
+                        {/* Lens Tint Aperture Overlay */}
+                        <div
+                          className="w-[74%] h-[48%] rounded-[38%] transition-all duration-300"
+                          style={{
+                            background: activeLens.overlayGradient,
+                            opacity: activeLens.opacity,
+                            filter: activeLens.polarized ? 'contrast(1.15) brightness(0.95)' : 'none',
+                          }}
+                        />
+
+                        {/* Realistic Multi-Layer Specular Glass Reflection Sheen */}
+                        <div
+                          className="absolute w-[74%] h-[48%] rounded-[38%] pointer-events-none opacity-40 bg-gradient-to-tr from-transparent via-white to-transparent"
+                          style={{
+                            backgroundSize: '200% 200%',
+                            opacity: activeLens.specularReflectance * 0.45,
+                          }}
+                        />
                       </div>
                     )}
+
+                    {/* Specular Light Sweep Animation on Transition */}
+                    {isForeground && lightSweepActive && (
+                      <div className="absolute inset-0 overflow-hidden pointer-events-none z-20">
+                        <div className="w-[140%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent animate-light-sweep" />
+                      </div>
+                    )}
+
+                    {/* Realistic Ground Mirror Reflection on Studio Table */}
+                    <div 
+                      className="absolute -bottom-16 w-full h-[65%] pointer-events-none overflow-hidden opacity-25 filter blur-[0.8px]"
+                      style={{
+                        transform: 'scaleY(-1)',
+                        maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 75%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 75%)',
+                      }}
+                    >
+                      <img
+                        src={product.image}
+                        alt="reflection"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
 
                     {/* Contact Ground Shadow */}
                     <div
@@ -250,7 +399,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                   onClick={() => selectSlot(idx)}
                   className={`p-3.5 rounded-2xl border transition-all duration-300 cursor-pointer ${
                     isCurrent
-                      ? 'bg-white text-[#111111] border-[#111111] shadow-md'
+                      ? 'bg-white text-[#111111] border-[#111111] shadow-md ring-1 ring-black/5'
                       : 'bg-[#F7F7F7] text-[#111111] border-[#E5E5E5] hover:bg-white hover:border-[#CCCCCC]'
                   }`}
                 >
@@ -319,7 +468,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
 
                     <a
                       href={createWhatsAppBookingLink(
-                        `Hi Eyeris! I'd like to check store availability and try on the *${item.brand} ${item.modelName}* (${item.colour}) at your KPHB store.`
+                        `Hi Eyeris! I'd like to check store availability and try on the *${item.brand} ${item.modelName}* (${item.colour}) paired with *${activeLens.name}* at your KPHB store.`
                       )}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -337,8 +486,10 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
 
         </div>
 
-        {/* Dedicated Non-Overlapping Specs HUD Strip (Clean & Spacious) */}
-        <div className="w-full mt-6 pt-5 border-t border-[#E5E5E5] z-20">
+        {/* Dedicated Non-Overlapping Specs HUD Strip & Dynamic Lens Shade Selector */}
+        <div className="w-full mt-6 pt-5 border-t border-[#E5E5E5] z-20 space-y-4">
+          
+          {/* Row 1: Brand Typography, Specs Badges & CTAs */}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentProduct.id}
@@ -401,21 +552,83 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
 
                 <a
                   href={createWhatsAppBookingLink(
-                    `Hello Eyeris Opticals! I am interested in trying on the *${currentProduct.brand} ${currentProduct.modelName}* at your KPHB store.`
+                    `Hello Eyeris Opticals! I am interested in trying on the *${currentProduct.brand} ${currentProduct.modelName}* paired with *${activeLens.name}* at your KPHB store.`
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-[#E5E5E5] hover:bg-[#F7F7F7] text-[#111111] font-mono text-xs tracking-wider font-semibold transition"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-[#E5E5E5] hover:bg-[#F7F7F7] text-[#111111] font-mono text-xs tracking-wider font-semibold transition shadow-xs"
                 >
                   <MessageCircle className="w-3.5 h-3.5 fill-current" />
-                  <span>ENQUIRE NOW</span>
+                  <span>ENQUIRE WITH THIS SHADE</span>
                 </a>
               </div>
             </motion.div>
           </AnimatePresence>
+
+          {/* Row 2: Dynamic Branded Lens Shades Selector & Real-Time Optical Badges */}
+          <div className="p-3.5 rounded-2xl bg-[#F7F7F7] border border-[#E5E5E5] flex flex-col md:flex-row md:items-center justify-between gap-4">
+            
+            {/* Swatch Selector */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-[#111111] mr-1 uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>Try Lens Shade:</span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-1.5">
+                {LENS_SHADE_PROFILES.map((shade) => {
+                  const isSelected = activeLens.id === shade.id;
+                  return (
+                    <button
+                      key={shade.id}
+                      onClick={() => setActiveLens(shade)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono transition-all duration-200 ${
+                        isSelected
+                          ? 'bg-[#111111] text-white shadow-sm ring-2 ring-[#D4AF37]'
+                          : 'bg-white border border-[#E5E5E5] text-[#555555] hover:text-[#111111] hover:border-[#CCCCCC]'
+                      }`}
+                    >
+                      <span
+                        className="w-2.5 h-2.5 rounded-full border border-black/20 shrink-0"
+                        style={{ backgroundColor: shade.swatchColor }}
+                      />
+                      <span className="font-medium whitespace-nowrap">{shade.shortLabel}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Live Clinical Badges for the Active Lens Shade */}
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
+              {activeLens.polarized && (
+                <span className="px-2.5 py-0.5 rounded-full bg-[#111111] text-white font-medium flex items-center gap-1">
+                  <Shield className="w-3 h-3 text-[#D4AF37]" />
+                  <span>100% Polarized (Cat 3)</span>
+                </span>
+              )}
+
+              {activeLens.blueCut && (
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium flex items-center gap-1">
+                  <Eye className="w-3 h-3 text-blue-600" />
+                  <span>BlueProtect™ Filter</span>
+                </span>
+              )}
+
+              <span className="px-2.5 py-0.5 rounded-full bg-white text-[#111111] border border-[#E5E5E5] font-medium">
+                {activeLens.uvDefense}
+              </span>
+
+              <span className="text-[#888888] hidden xl:inline">
+                • {activeLens.category}
+              </span>
+            </div>
+
+          </div>
+
         </div>
 
-        {/* Collection Selector & Bottom Trust Strip */}
+        {/* Collection Selector & Bottom Store Info Strip */}
         <div className="mt-6 pt-5 border-t border-[#E5E5E5] flex flex-col md:flex-row items-center justify-between gap-6 z-20">
           
           {/* Left: Collection Numbers (01, 02, 03, 04, 05, 06) */}
