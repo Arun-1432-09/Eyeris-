@@ -40,8 +40,8 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
   const [wishlistMap, setWishlistMap] = useState<Record<string, boolean>>({});
   const [lightSweepActive, setLightSweepActive] = useState(false);
   
-  // Auto-Slide State
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  // Auto-Slide State (Default false so scrolling the landing page is never interrupted)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [autoSlideProgress, setAutoSlideProgress] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isHeroVisible, setIsHeroVisible] = useState(true);
@@ -49,9 +49,6 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRailRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const touchStartX = useRef<number | null>(null);
-  const lastWheelTime = useRef<number>(0);
-  const wheelAccumulator = useRef<number>(0);
 
   const totalProducts = RUNWAY_PRODUCTS.length;
   const currentProduct = RUNWAY_PRODUCTS[currentIndex];
@@ -144,30 +141,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     }, 600);
   };
 
-  // Localized Two-Way Wheel & Trackpad Scroll Scrubbing (Only active on corridor & carousel rail)
-  const handleZoneWheel = (e: React.WheelEvent) => {
-    // Stop propagation so page does not receive wheel events when scrubbing inside these zones
-    e.stopPropagation();
-
-    // Ignore tiny accidental jitters
-    if (Math.abs(e.deltaY) < 15) return;
-
-    const now = Date.now();
-    wheelAccumulator.current += e.deltaY;
-
-    // Trigger frame advance when accumulated delta crosses threshold with 240ms cooldown
-    if (Math.abs(wheelAccumulator.current) > 40 && now - lastWheelTime.current > 240) {
-      if (wheelAccumulator.current > 0) {
-        selectSlot((currentIndex + 1) % totalProducts);
-      } else {
-        selectSlot((currentIndex - 1 + totalProducts) % totalProducts);
-      }
-      wheelAccumulator.current = 0;
-      lastWheelTime.current = now;
-    }
-  };
-
-  // 5-Second Gentle Auto-Slide Interval Loop (Paused when hero is out of view or hovered)
+  // 5-Second Gentle Auto-Slide Interval Loop (Only runs when explicitly enabled via Play button)
   useEffect(() => {
     if (!isAutoPlaying || isHovered || !isHeroVisible) return;
 
@@ -187,32 +161,12 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     return () => clearInterval(timer);
   }, [isAutoPlaying, isHovered, isHeroVisible, currentIndex, isAnimating]);
 
-  // Touch Swipe Handling for Mobile
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) {
-      if (diff > 0) {
-        // Swiped left -> next
-        selectSlot((currentIndex + 1) % totalProducts);
-      } else {
-        // Swiped right -> prev
-        selectSlot((currentIndex - 1 + totalProducts) % totalProducts);
-      }
-    }
-    touchStartX.current = null;
-  };
-
-  // Keyboard navigation
+  // Keyboard navigation (Strictly horizontal arrows only - NEVER intercept page scroll keys ArrowDown/ArrowUp)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      if (e.key === 'ArrowRight') {
         selectSlot((currentIndex + 1) % totalProducts);
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      } else if (e.key === 'ArrowLeft') {
         selectSlot((currentIndex - 1 + totalProducts) % totalProducts);
       }
     };
@@ -244,8 +198,6 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     <section
       id="home"
       ref={containerRef}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
       className="relative min-h-screen bg-[#FFFFFF] text-[#111111] pt-28 pb-8 overflow-hidden flex flex-col justify-between select-none"
     >
       {/* Background Soft Studio Pedestal Illumination */}
@@ -291,7 +243,6 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
 
           {/* Center Column: 6-Product 3D Perspective Depth Corridor (Matching Reference 1) */}
           <div 
-            onWheel={handleZoneWheel}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className="lg:col-span-5 relative h-[360px] sm:h-[440px] flex items-center justify-center perspective-[1200px]"
@@ -443,7 +394,6 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
 
           {/* Right Column: Scrollable 6-Card Stream Rail (Reference 1 Style) */}
           <div 
-            onWheel={handleZoneWheel}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className="lg:col-span-3 z-20 flex flex-col max-w-xs ml-auto w-full bg-white/70 backdrop-blur-sm p-3 rounded-3xl border border-[#E5E5E5] shadow-xs"
