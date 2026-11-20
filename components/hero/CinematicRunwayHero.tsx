@@ -49,7 +49,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
   const totalProducts = RUNWAY_PRODUCTS.length;
   const currentProduct = RUNWAY_PRODUCTS[currentIndex];
 
-  // Framer Motion native scroll tracking across the 320vh scroll track
+  // Framer Motion native scroll tracking across the 300vh scroll track
   const { scrollYProgress } = useScroll({
     target: trackRef,
     offset: ['start start', 'end end'],
@@ -144,10 +144,10 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentIndex, isAnimating]);
 
-  // Diagonal perspective offsets for white studio runway
+  // Perfectly balanced diagonal perspective offsets for white studio runway
   const getCorridorOffset = (slotIndex: number) => {
-    const xOffsets = [0, 80, 155, 220, 280, 335];
-    const yOffsets = [0, -10, -18, -25, -31, -36];
+    const xOffsets = [0, 68, 130, 185, 235, 280];
+    const yOffsets = [0, -8, -15, -21, -26, -30];
     return {
       x: xOffsets[slotIndex] || 0,
       y: yOffsets[slotIndex] || 0,
@@ -170,22 +170,22 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
       ref={trackRef}
       className="relative h-[300vh] bg-[#FFFFFF] text-[#111111]"
     >
-      {/* Pinned 100vh Sticky Stage Container */}
-      <div className="sticky top-0 h-screen max-h-screen w-full overflow-hidden flex flex-col justify-between pt-20 pb-3 px-4 sm:px-8 select-none bg-[#FFFFFF]">
+      {/* Pinned 100vh Sticky Stage Container with Generous Luxury Margins */}
+      <div className="sticky top-0 h-screen max-h-screen w-full overflow-hidden flex flex-col justify-between pt-24 pb-4 px-6 sm:px-10 lg:px-12 select-none bg-[#FFFFFF]">
         
         {/* Soft Apple Studio Pedestal Illumination */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_75%_55%_at_50%_36%,rgba(0,0,0,0.02)_0%,rgba(255,255,255,1)_100%)]" />
 
-        {/* Inner Stage Grid (Fits within 100vh with Zero Overflow) */}
+        {/* Inner Stage Grid (Fits within 100vh with Zero Overflow and Uncluttered Spacing) */}
         <div className="max-w-[1440px] mx-auto w-full relative z-10 flex-1 flex flex-col justify-between my-auto">
           
-          {/* Top Row: Headline (Left) | 3D Corridor (Center) | 3-Card Rail (Right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-center flex-1 my-auto">
+          {/* Main Showcase Row: Headline (Left) | 3D Corridor (Center) | 3-Card Rail (Right) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center flex-1 my-auto">
             
             {/* Left Column: Brand Headline & Editorial Typography (References 1 & 2) */}
-            <div className="lg:col-span-4 z-20 space-y-3.5 text-left">
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-mono tracking-[0.35em] text-[#888888] uppercase font-medium">
+            <div className="lg:col-span-4 z-20 space-y-4 text-left pr-2">
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-mono tracking-[0.35em] text-[#888888] uppercase font-semibold">
                   — OPTICALS —
                 </span>
                 <div className="inline-block text-[11px] font-mono tracking-[0.25em] uppercase text-[#111111] font-bold">
@@ -193,7 +193,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                 </div>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#111111] leading-[1.05]">
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold tracking-tight text-[#111111] leading-[1.08]">
                 PREMIUM <br />
                 EYEWEAR <br />
                 <span className="font-light text-[#777777]">COLLECTIONS</span>
@@ -203,10 +203,10 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                 Discover a world of style, precision and clarity at EYERIS. Branded frames paired with hospital-calibrated clinical lenses.
               </p>
 
-              <div className="pt-1">
+              <div className="pt-1.5">
                 <a
                   href="#collections"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#111111] bg-white hover:bg-[#111111] hover:text-white text-[#111111] text-xs font-mono tracking-wider font-semibold transition-all duration-300 shadow-xs transform hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#111111] bg-white hover:bg-[#111111] hover:text-white text-[#111111] text-xs font-mono tracking-wider font-semibold transition-all duration-300 shadow-xs transform hover:-translate-y-0.5"
                 >
                   <span>EXPLORE COLLECTION</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -215,12 +215,12 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
             </div>
 
             {/* Center Column: 6-Product 3D Perspective Depth Corridor (Matching Reference 1 & 2) */}
-            <div className="lg:col-span-5 relative h-[280px] sm:h-[350px] flex items-center justify-center perspective-[1200px]">
+            <div className="lg:col-span-5 relative h-[300px] sm:h-[370px] flex items-center justify-center perspective-[1200px]">
               
               {/* Soft Studio Floor Reflection Base */}
-              <div className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
+              <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
 
-              {/* Depth Slots Loop (Render from slot 5 down to 0) */}
+              {/* Depth Slots Loop (Render from slot 5 down to 0) with Silky Spring Physics */}
               {[5, 4, 3, 2, 1, 0].map((slotNumber) => {
                 const { product, slotConfig, offsets } = getSlotProduct(slotNumber);
                 const isForeground = slotNumber === 0;
@@ -237,8 +237,8 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                       filter: `blur(${slotConfig.blur})`,
                     }}
                     transition={{
-                      duration: 0.55,
-                      ease: [0.16, 1, 0.3, 1],
+                      duration: 0.65,
+                      ease: [0.19, 1, 0.22, 1],
                     }}
                     onClick={() => !isForeground && selectSlot((currentIndex + slotNumber) % totalProducts)}
                     style={{
@@ -249,14 +249,18 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                     }}
                     className="flex flex-col items-center justify-center will-change-transform"
                   >
-                    {/* Eyewear Image Stage */}
-                    <div className="relative w-[300px] sm:w-[400px] h-[180px] sm:h-[240px] flex items-center justify-center">
+                    {/* Eyewear Image Stage with Subtle Floating Breathing Motion for Lead Frame */}
+                    <motion.div 
+                      animate={isForeground ? { y: [0, -3.5, 0] } : { y: 0 }}
+                      transition={isForeground ? { repeat: Infinity, duration: 4.5, ease: 'easeInOut' } : {}}
+                      className="relative w-[310px] sm:w-[410px] h-[190px] sm:h-[250px] flex items-center justify-center"
+                    >
                       
                       {/* Primary Photorealistic 3D Frame Image (3/4 Perspective) */}
                       <img
                         src={product.image}
                         alt={`${product.brand} ${product.modelName}`}
-                        className="max-w-full max-h-full object-contain filter drop-shadow-[0_12px_22px_rgba(0,0,0,0.10)] relative z-10"
+                        className="max-w-full max-h-full object-contain filter drop-shadow-[0_14px_24px_rgba(0,0,0,0.08)] relative z-10"
                         loading={isForeground ? 'eager' : 'lazy'}
                       />
 
@@ -317,17 +321,17 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                         className="absolute -bottom-3 w-3/4 h-5 contact-shadow pointer-events-none"
                         style={{ opacity: slotConfig.opacity * 0.7 }}
                       />
-                    </div>
+                    </motion.div>
                   </motion.div>
                 );
               })}
             </div>
 
             {/* Right Column: Floating 3-Card Stream Rail (Matching References 1 & 2) */}
-            <div className="lg:col-span-3 z-20 flex flex-col max-w-xs ml-auto w-full bg-white/80 backdrop-blur-md p-3 rounded-3xl border border-[#E5E5E5] shadow-xs">
+            <div className="lg:col-span-3 z-20 flex flex-col max-w-[290px] ml-auto w-full bg-white/85 backdrop-blur-xl p-3.5 rounded-3xl border border-[#E5E5E5] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               
               {/* Header: Confirmed Brands & Live Counter (Reference 1) */}
-              <div className="flex items-center justify-between pb-2 border-b border-[#E5E5E5] mb-2 px-1">
+              <div className="flex items-center justify-between pb-2.5 border-b border-[#EAEAEA] mb-2.5 px-1">
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
                   <span className="text-[10px] font-mono tracking-[0.2em] uppercase font-bold text-[#111111]">
@@ -340,8 +344,8 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                 </div>
               </div>
 
-              {/* 3-Card Floating Stream Window */}
-              <div className="flex flex-col gap-2 max-h-[310px] overflow-hidden pr-0.5">
+              {/* 3-Card Floating Stream Window with Smooth Layout Gliding Transitions */}
+              <div className="flex flex-col gap-2.5 max-h-[320px] overflow-hidden pr-0.5">
                 {[0, 1, 2].map((offset) => {
                   const itemIndex = (currentIndex + offset) % totalProducts;
                   const item = RUNWAY_PRODUCTS[itemIndex];
@@ -352,15 +356,23 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                     <motion.div
                       key={item.id}
                       layout
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: isCurrent ? 1 : 0.78, y: 0 }}
+                      exit={{ opacity: 0, y: -12 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 260,
+                        damping: 26,
+                      }}
                       onClick={() => selectSlot(itemIndex)}
-                      className={`p-2.5 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                      className={`p-3 rounded-2xl border transition-all duration-300 cursor-pointer ${
                         isCurrent
-                          ? 'bg-white text-[#111111] border-[#111111] shadow-md ring-1 ring-black/5'
-                          : 'bg-[#F9F9F9] text-[#111111] border-[#E5E5E5] opacity-75 hover:opacity-100 hover:bg-white'
+                          ? 'bg-white text-[#111111] border-[#111111] shadow-md ring-1 ring-black/5 scale-[1.01]'
+                          : 'bg-[#FAFAFA] text-[#111111] border-[#E8E8E8] opacity-75 hover:opacity-100 hover:bg-white hover:border-[#CCCCCC]'
                       }`}
                     >
                       {/* Card Header: Brand Wordmark & Wishlist Heart */}
-                      <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center justify-between mb-1.5">
                         <span className="text-xs font-mono font-bold tracking-wider uppercase text-[#111111]">
                           {item.brandLogoText}
                         </span>
@@ -379,7 +391,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                       </div>
 
                       {/* Frame 3D Image Thumbnail */}
-                      <div className="relative w-full h-14 rounded-xl overflow-hidden bg-white border border-[#E5E5E5] mb-1.5 flex items-center justify-center p-1">
+                      <div className="relative w-full h-15 rounded-xl overflow-hidden bg-white border border-[#EAEAEA] mb-2 flex items-center justify-center p-1.5">
                         <img
                           src={item.image}
                           alt={item.modelName}
@@ -388,7 +400,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                       </div>
 
                       {/* Model & Spec Label */}
-                      <div className="mb-1">
+                      <div className="mb-1.5">
                         <h4 className="text-xs font-bold text-[#111111] truncate leading-tight">
                           {item.modelName}
                         </h4>
@@ -398,7 +410,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                       </div>
 
                       {/* Bottom Action Links */}
-                      <div className="pt-1.5 border-t border-[#E5E5E5] flex items-center justify-between text-[10px] font-mono font-semibold">
+                      <div className="pt-2 border-t border-[#EAEAEA] flex items-center justify-between text-[10px] font-mono font-semibold">
                         <span
                           onClick={(e) => {
                             e.stopPropagation();
@@ -440,8 +452,8 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                 })}
               </div>
 
-              {/* Bottom Footer: [ ← ] [ → ] SCROLL OR SCRUB Controls (Reference 1) */}
-              <div className="pt-2 border-t border-[#E5E5E5] mt-1.5 flex items-center justify-between px-1">
+              {/* Bottom Footer: [ ← ] [ → ] SCROLL TO SCRUB Controls (Reference 1) */}
+              <div className="pt-2.5 border-t border-[#EAEAEA] mt-2 flex items-center justify-between px-1">
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => selectSlot((currentIndex - 1 + totalProducts) % totalProducts)}
@@ -479,21 +491,21 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
 
           </div>
 
-          {/* Bottom HUD: Specs Bar (Reference 2) + Minimal Apple Lens Drawer */}
-          <div className="w-full pt-3 border-t border-[#E5E5E5] z-20 space-y-2.5">
+          {/* Bottom HUD: Floating Specs Bar (Reference 2) + Minimal Apple Lens Drawer */}
+          <div className="w-full pt-4 border-t border-[#EAEAEA] z-20 space-y-3">
             
-            {/* Row 1: Collection Indicator, Frame Specs & CTAs */}
+            {/* Row 1: Collection Indicator, Frame Specs Capsule & CTAs */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentProduct.id}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.25 }}
-                className="flex flex-wrap items-center justify-between gap-3"
+                initial={{ opacity: 0, y: 6, filter: 'blur(3px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -6, filter: 'blur(3px)' }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-wrap items-center justify-between gap-3.5"
               >
                 {/* Left: Collection Badges 01-06 & Active Wordmark */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3.5 sm:gap-5">
                   <div className="flex items-center gap-1.5 font-mono text-xs">
                     <span className="text-[10px] uppercase font-bold text-[#888888] tracking-widest mr-1">
                       COLLECTION
@@ -504,7 +516,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                         onClick={() => selectSlot(i)}
                         className={`w-6 h-6 rounded-md font-mono text-xs flex items-center justify-center transition-all ${
                           currentIndex === i
-                            ? 'bg-[#111111] text-white font-bold'
+                            ? 'bg-[#111111] text-white font-bold shadow-xs'
                             : 'text-[#666666] hover:text-[#111111] hover:bg-[#F2F2F2]'
                         }`}
                       >
@@ -513,7 +525,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                     ))}
                   </div>
 
-                  <span className="h-3.5 w-[1px] bg-[#CCCCCC] hidden sm:inline" />
+                  <span className="h-4 w-[1px] bg-[#E0E0E0] hidden sm:inline" />
 
                   <div className="flex items-center gap-2 font-mono">
                     <span className="text-xs sm:text-sm font-bold text-[#111111]">
@@ -525,16 +537,18 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                   </div>
                 </div>
 
-                {/* Center: Frame Specs Badges (Reference 2) */}
-                <div className="flex flex-wrap items-center gap-3 sm:gap-5 text-[11px] font-mono text-[#555555]">
+                {/* Center: Frame Specs Badges Capsule (Reference 2 Floating Style) */}
+                <div className="flex flex-wrap items-center gap-3 sm:gap-5 px-3 py-1.5 rounded-full bg-[#F8F8F8] border border-[#EAEAEA] text-[11px] font-mono text-[#555555]">
                   <div className="flex items-center gap-1.5">
                     <Eye className="w-3 h-3 text-[#111111]" />
                     <span>Shape: <strong className="text-[#111111]">{currentProduct.shape}</strong></span>
                   </div>
+                  <span className="w-1 h-1 rounded-full bg-[#CCCCCC]" />
                   <div className="flex items-center gap-1.5">
                     <Layers className="w-3 h-3 text-[#111111]" />
                     <span>Material: <strong className="text-[#111111]">{currentProduct.material}</strong></span>
                   </div>
+                  <span className="w-1 h-1 rounded-full bg-[#CCCCCC]" />
                   <div className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
                     <span>Colour: <strong className="text-[#111111]">{currentProduct.colour}</strong></span>
@@ -546,7 +560,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                   {/* Minimal Apple "Try Lenses" Pill Trigger */}
                   <button
                     onClick={() => setIsLensDrawerOpen(!isLensDrawerOpen)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-mono transition-all ${
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-mono transition-all ${
                       isLensDrawerOpen || activeLens.id !== 'clear-blueprotect'
                         ? 'border-[#111111] bg-[#111111] text-white shadow-xs'
                         : 'border-[#E5E5E5] bg-white text-[#111111] hover:bg-[#F7F7F7]'
@@ -592,7 +606,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E5E5E5] hover:bg-[#F7F7F7] text-[#111111] font-mono text-xs tracking-wider font-semibold transition shadow-xs"
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[#E5E5E5] hover:bg-[#F7F7F7] text-[#111111] font-mono text-xs tracking-wider font-semibold transition shadow-xs"
                   >
                     <MessageCircle className="w-3 h-3 fill-current" />
                     <span>ENQUIRE NOW</span>
@@ -601,17 +615,17 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
               </motion.div>
             </AnimatePresence>
 
-            {/* Minimal Apple Lens Drawer (Slides Open on Click) */}
+            {/* Minimal Apple Lens Drawer (Slides Open on Click with Frosted Blur Backdrop) */}
             <AnimatePresence>
               {isLensDrawerOpen && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0, y: 10 }}
+                  initial={{ opacity: 0, height: 0, y: 8 }}
                   animate={{ opacity: 1, height: 'auto', y: 0 }}
-                  exit={{ opacity: 0, height: 0, y: 10 }}
-                  transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  exit={{ opacity: 0, height: 0, y: 8 }}
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   className="overflow-hidden"
                 >
-                  <div className="p-3 rounded-2xl bg-[#F7F7F7] border border-[#E5E5E5] flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
+                  <div className="p-3.5 rounded-2xl bg-[#FAFAFA] border border-[#E5E5E5] flex flex-col md:flex-row md:items-center justify-between gap-3.5 shadow-[0_8px_24px_rgba(0,0,0,0.04)]">
                     
                     {/* Swatches List */}
                     <div className="flex flex-wrap items-center gap-2">
@@ -627,7 +641,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                             <button
                               key={shade.id}
                               onClick={() => setActiveLens(shade)}
-                              className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono transition-all ${
+                              className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono transition-all duration-200 ${
                                 isSelected
                                   ? 'bg-[#111111] text-white shadow-xs ring-1 ring-[#D4AF37]'
                                   : 'bg-white border border-[#E5E5E5] text-[#555555] hover:text-[#111111] hover:border-[#CCCCCC]'
@@ -648,20 +662,20 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
                     {/* Clinical Badges */}
                     <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
                       {activeLens.polarized && (
-                        <span className="px-2 py-0.5 rounded-full bg-[#111111] text-white font-medium flex items-center gap-1">
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#111111] text-white font-medium flex items-center gap-1">
                           <Shield className="w-3 h-3 text-[#D4AF37]" />
                           <span>100% Polarized</span>
                         </span>
                       )}
 
                       {activeLens.blueCut && (
-                        <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium flex items-center gap-1">
+                        <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium flex items-center gap-1">
                           <Eye className="w-3 h-3 text-blue-600" />
                           <span>BlueProtect™ Filter</span>
                         </span>
                       )}
 
-                      <span className="px-2 py-0.5 rounded-full bg-white text-[#111111] border border-[#E5E5E5] font-medium">
+                      <span className="px-2.5 py-0.5 rounded-full bg-white text-[#111111] border border-[#E5E5E5] font-medium">
                         {activeLens.uvDefense}
                       </span>
 
@@ -680,7 +694,7 @@ export const CinematicRunwayHero: React.FC<CinematicRunwayHeroProps> = ({
             </AnimatePresence>
 
             {/* Row 2: Bottom Trust Strip (Reference 2) */}
-            <div className="pt-2 border-t border-[#E5E5E5] flex flex-wrap items-center justify-between text-[11px] font-mono text-[#666666]">
+            <div className="pt-2.5 border-t border-[#EAEAEA] flex flex-wrap items-center justify-between text-[11px] font-mono text-[#666666]">
               <div className="flex flex-wrap items-center gap-4 sm:gap-8">
                 <span className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
